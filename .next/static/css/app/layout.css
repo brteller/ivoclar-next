@@ -650,11 +650,11 @@ video {
 .h-7 {
   height: 1.75rem;
 }
-.h-full {
-  height: 100%;
-}
 .h-8 {
   height: 2rem;
+}
+.h-full {
+  height: 100%;
 }
 .min-h-\[260px\] {
   min-height: 260px;
@@ -692,15 +692,15 @@ video {
 .w-7 {
   width: 1.75rem;
 }
+.w-auto {
+  width: auto;
+}
 .w-fit {
   width: -moz-fit-content;
   width: fit-content;
 }
 .w-full {
   width: 100%;
-}
-.w-auto {
-  width: auto;
 }
 .min-w-0 {
   min-width: 0px;
@@ -1200,9 +1200,6 @@ video {
 }
 .font-semibold {
   font-weight: 600;
-}
-.lowercase {
-  text-transform: lowercase;
 }
 .italic {
   font-style: italic;

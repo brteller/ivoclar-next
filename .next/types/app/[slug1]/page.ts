@@ -1,4 +1,4 @@
-// File: /Users/brandonteller/Documents/GitHub/ivoclar-reat/app/[slug1]/page.js
+// File: /Users/brandonteller/Documents/GitHub/ivoclar-next/app/[slug1]/page.js
 import * as entry from '../../../../app/[slug1]/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
