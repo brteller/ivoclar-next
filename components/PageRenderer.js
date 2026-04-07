@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { CREATOR } from '@/lib/creator';
+import DentistTestimonials from '@/components/DentistTestimonials';
+import EstheticsCard from '@/components/EstheticsCard';
+import QualityCard from '@/components/QualityCard';
+import EfficiencyCard from '@/components/EfficiencyCard';
+import SuperheroTestimonialCards from '@/components/SuperheroTestimonialCards';
+import LeadCaptureForm from '@/components/LeadCaptureForm';
 
 /** Top hero background — do not change; hero section must always use this image. */
 const HERO_TOP_IMAGE = '/images/top-hero.png';
-/** Superhero images from public/images/superhero — used only for the three testimonial cards (not the hero). */
-const SUPERHERO_IMAGES = ['/images/superhero/tiffany.jpg', '/images/superhero/mennito.jpg', '/images/superhero/luna.jpg'];
-
 // Tetric product lines — image, learnMoreUrl; optional vimeoId (legacy) or vimeoSections (up to 2 with title/subtitle); optional secondaryPhoto block
 const TETRIC_PRODUCTS = [
 	{
@@ -178,16 +180,17 @@ const TETRIC_PRODUCTS_BY_CATEGORY = {
 	'posterior-restoration-composite': ['tetric-powerflow', 'tetric-powerfill'],
 };
 
+const DEFAULT_TESTIMONIAL_IDS = ['tiffani', 'manuela', 'luana'];
+const TESTIMONIAL_IDS_BY_CATEGORY = {
+	// Example:
+	// 'posterior-restoration-composite': ['ragazzini'],
+};
+
+const SHOW_DENTIST_TESTIMONIALS = false;
+
 const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
-	const router = useRouter();
 	const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 	const [lastScrollY, setLastScrollY] = useState(0);
-	const [formData, setFormData] = useState({
-		firstName: '', lastName: '', companyName: '', jobTitle: '', email: '', phone: '',
-		address: '', city: '', stateProvince: '', postCode: '', country: '', productDemo: '',
-		termsAccepted: false, marketingOptIn: false
-	});
-	const [formSubmitting, setFormSubmitting] = useState(false);
 	const [selectedProductIndex, setSelectedProductIndex] = useState(0);
 
 	useEffect(() => {
@@ -203,53 +206,6 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 			window.removeEventListener('scroll', handleScroll);
 		};
 	}, [lastScrollY]);
-
-	const handleFormChange = (e) => {
-		const { name, value, type, checked } = e.target;
-		setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-	};
-
-	const handleFormSubmit = async (e) => {
-		e.preventDefault();
-		if (!formData.termsAccepted) {
-			alert('Please read and accept the General Terms of Use to continue.');
-			return;
-		}
-		setFormSubmitting(true);
-		
-		const leadPayload = {
-			...formData,
-			page_path: pathname,
-			category: pageContext?.category ?? null,
-			country: pageContext?.country ?? null,
-			state: pageContext?.state ?? null,
-			city: pageContext?.city ?? null,
-		};
-		try {
-			const response = await fetch('/api/contact', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(leadPayload),
-			});
-			
-			if (response.ok) {
-				// Redirect to thank you page
-				router.push('/thank-you');
-		} else {
-				// Show error message
-				alert('There was an error submitting your form. Please try again.');
-			}
-		} catch (error) {
-			console.error('Form submission error:', error);
-			// For now, redirect to thank you page even on error (since API endpoint is not set up)
-			// Comment this out once you have a real API endpoint
-			router.push('/thank-you');
-		} finally {
-			setFormSubmitting(false);
-		}
-	};
 
 	// Central page context - single source of truth
 	const getPageContext = () => {
@@ -749,13 +705,21 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 									}}
 								>
 									<div className="rounded-tr-[calc(0.5rem-2px)] p-8">
-										<h1 className="text-3xl md:text-4xl lg:text-7xl text-white font-light leading-tight">
+										<h2 className="text-3xl md:text-4xl lg:text-7xl text-white font-light leading-tight">
 											Unleash <br></br>your inner
 											<div className="font-bold text-8xl text-white">Superhero</div>
-										</h1>
-										<h2 className="text-white text-lg md:text-5xl mt-3 font-light">
-											With Tetric<br></br> Direct Composites.
 										</h2>
+										<h1 className="text-white text-lg md:text-5xl mt-3 font-light">
+											{htmlContent?.category?.name ? (
+												<>
+													With Tetric {htmlContent.category.name}.
+												</>
+											) : (
+												<>
+													With Tetric<br></br> Direct Composites.
+												</>
+											)}
+										</h1>
 
 										<div className="flex flex-wrap mb-8 mt-12 overflow-hidden items-center gap-6">
 											<button
@@ -795,7 +759,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 						</p>
 					</div>
 					<p className="text-[#0a478b] text-base md:text-lg leading-relaxed">
-						To date, more than 730 million restorations have been placed with Tetric throughout the world. [1] You can rely on our tried-and-tested restorative materials that stand out for their exceptional esthetics, proven quality and high level of efficiency.
+					To date, more than 730 million restorations have been placed with Tetric throughout the world. You can rely on our tried-and-tested restorative materials that stand out for their exceptional esthetics, proven quality, and high level of efficiency.
 					</p>
 				</div>
 			</section>
@@ -804,50 +768,9 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
             <section className="py-20 px-4 md:px-6 bg-gray-50">
 				<div className="max-w-6xl mx-auto">
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12">
-						{/* Esthetics */}
-						<div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-							<div className="w-14 h-14 rounded-full border-2 border-[#0a478b]/30 bg-[#00a651]/10 flex items-center justify-center mb-6">
-								<svg className="w-7 h-7 text-[#0a478b]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-								</svg>
-							</div>
-							<h3 className="text-xl font-bold text-[#0a478b] mb-4">Esthetics</h3>
-							<ul className="space-y-2.5 text-gray-600 text-sm leading-relaxed">
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>Esthetic results in both anterior and posterior teeth</span></li>
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>Natural-looking restorations in anterior teeth with Tetric Prime and Tetric EvoFlow</span></li>
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>True-to-nature esthetics in the posterior region with Tetric PowerFill and Tetric PowerFlow</span></li>
-							</ul>
-						</div>
-						{/* Quality */}
-						<div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-							<div className="w-14 h-14 rounded-full border-2 border-[#0a478b]/30 bg-[#00a651]/10 flex items-center justify-center mb-6">
-								<svg className="w-7 h-7 text-[#0a478b]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-								</svg>
-							</div>
-							<h3 className="text-xl font-bold text-[#0a478b] mb-4">Quality</h3>
-							<ul className="space-y-2.5 text-gray-600 text-sm leading-relaxed">
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>More than 730 million restorations [1] placed throughout the world</span></li>
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>Based on Tetric EvoCeram, which has enjoyed more than 15 years of clinical success</span></li>
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>Easy handling</span></li>
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>Minimal susceptibility to fracture due to high flexural strength [2]</span></li>
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>Due to their high radiopacity, the materials are clearly visible on X-rays</span></li>
-							</ul>
-						</div>
-						{/* Efficiency */}
-						<div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-							<div className="w-14 h-14 rounded-full border-2 border-[#0a478b]/30 bg-[#00a651]/10 flex items-center justify-center mb-6">
-								<svg className="w-7 h-7 text-[#0a478b]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-								</svg>
-							</div>
-							<h3 className="text-xl font-bold text-[#0a478b] mb-4">Efficiency</h3>
-							<ul className="space-y-2.5 text-gray-600 text-sm leading-relaxed">
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>All the different consistency and shade variants of the Tetric Line can be effectively combined</span></li>
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>Short light exposure times</span></li>
-								<li className="flex gap-2"><span className="text-[#00a651] mt-1.5 shrink-0">•</span><span>Time savings of up to 51% with the 4-mm composites when the 3s PowerCure product portfolio is used [3]</span></li>
-							</ul>
-						</div>
+						<EstheticsCard />
+						<QualityCard />
+						<EfficiencyCard />
 					</div>
 				</div>
 			</section>
@@ -875,75 +798,19 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
             {/* Testimonial section: three doctor superhero cards, hero colors, grid */}
             {(() => {
 				const conv = getConversionContent();
-				const superheroDoctors = [
-                    {
-						name: 'Dr Nicola Ragazzini',
-						affiliation: 'Bologna, Italy',
-						quote: 'Fast-curing materials such as Tetric PowerFill and Tetric PowerFlow, which can be applied in layers of up to 4 mm, enable us to improve the patient experience and optimize chairside time.',
-						image: SUPERHERO_IMAGES[0],
-						imagePosition: 'right'
-					},
-					{
-						name: conv.testimonialAuthor,
-						affiliation: conv.testimonialTitle,
-						quote: conv.testimonialQuote,
-						image: SUPERHERO_IMAGES[1],
-						imagePosition: null
-					},
-					{
-						name: 'Dr med. dent. Manuela Brajković-Deković',
-						affiliation: 'Dental Clinic Poreč, Croatia',
-						quote: 'Tetric Prime has a creamy consistency, yet it is stable and very easy to adapt. I\'m looking forward to using it in my practice.',
-						image: SUPERHERO_IMAGES[2],
-						imagePosition: null
-					}
-				];
+				const testimonialIds = TESTIMONIAL_IDS_BY_CATEGORY[categorySlug] || DEFAULT_TESTIMONIAL_IDS;
 				return (
 					<section className="py-20 px-4 md:px-6 bg-gray-950 relative overflow-hidden" aria-label="Doctor testimonials">
 						<div className="absolute inset-0 bg-blue-900/80" aria-hidden />
 						<div className="relative max-w-6xl mx-auto">
 							<h2 className="text-2xl md:text-3xl lg:text-4xl text-white font-normal text-center mb-4">
 								Superheroes <span className="font-bold">for their patients</span>
+								
 							</h2>
 							<p className="text-white/90 text-lg md:text-xl text-center mb-12 max-w-2xl mx-auto">
-								Tetric® enabled them to be superheroes—delivering exceptional care and outcomes every day.
+							The Tetric Line enabled them to be superheroes--delivering quality and high esthetic outcomes every day.
 							</p>
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
-								{superheroDoctors.map((doc, i) => (
-									<article key={i} className="flex flex-col">
-										{/* Card with flat border matching hero (1px solid #00a651) */}
-										<div
-											className="rounded-xl flex-1 flex flex-col overflow-hidden border border-[#00a651]"
-										>
-											<div className="rounded-xl bg-blue-950 flex flex-col h-full overflow-hidden">
-												{/* Tall superhero photo */}
-												<div className="aspect-[23/24] w-full flex-shrink-0 overflow-hidden bg-gray-800">
-													{/* eslint-disable-next-line @next/next/no-img-element */}
-													<img
-														src={doc.image}
-														alt={doc.name}
-														className={`w-full h-full object-cover ${doc.imagePosition === 'right' ? 'object-right object-top' : 'object-center object-top'}`}
-														onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling?.classList.remove('hidden'); }}
-													/>
-													<div className="hidden w-full h-full flex items-center justify-center text-white/50 text-sm p-4 text-center">
-														<span>Photo: {doc.name}</span>
-													</div>
-												</div>
-												{/* Quote + attribution */}
-												<div className="p-5 flex flex-col flex-1">
-													<blockquote className="text-white/95 text-sm md:text-base leading-relaxed italic flex-1">
-														&quot;{doc.quote}&quot;
-													</blockquote>
-													<footer className="mt-4 pt-4 border-t border-white/20">
-														<cite className="not-italic font-bold text-white text-base">{doc.name}</cite>
-														<div className="text-white/80 text-sm mt-0.5">{doc.affiliation}</div>
-													</footer>
-												</div>
-											</div>
-										</div>
-									</article>
-								))}
-							</div>
+							<SuperheroTestimonialCards testimonialIds={testimonialIds} />
 							{/* CTA row — match hero: white primary button, underlined Shop now */}
 							<div className="flex flex-wrap items-center justify-center gap-6 mt-12">
 								<button
@@ -974,10 +841,10 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 					<div className="grid grid-cols-1 lg:grid-cols-[1fr,1.2fr] gap-12 lg:gap-16 items-center">
 						<div>
 							<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] leading-tight tracking-tight mb-4">
-								The solution for all cavities<sup className="text-[#0a478b]/80 font-normal">*</sup>
+								The solution for all cavities
 							</h2>
 							<p className="text-[#0a478b]/90 text-base md:text-lg leading-relaxed">
-								Four composite materials are all you need for an efficient restorative workflow in all cavity classes.<sup className="font-normal">*</sup>
+							Four composite materials are all you need for an efficient restorative workflow in all cavity classes.
 							</p>
 						</div>
 						<div className="flex justify-center lg:justify-end">
@@ -995,7 +862,9 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
             {/* Product lines — tabs, copy, image, specs, Learn more CTA */}
             <section className="py-20 px-4 md:px-6 bg-gray-50">
 				<div className="max-w-6xl mx-auto">
-					<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-8 tracking-tight">Tetric Line</h2>
+					<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-8 tracking-tight">
+						{pageContext?.category ? `Tetric Line for ${pageContext.category}` : 'Tetric Line'}
+					</h2>
 					{/* Tabs */}
 					<div className="border-b border-gray-200 mb-10 overflow-x-auto">
 						<nav className="flex gap-1 min-w-0" aria-label="Product line">
@@ -1188,64 +1057,8 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 				</div>
 			</section>
 
-            {/* Dentist testimonials — alternating layout, modern & enterprise */}
-            {(() => {
-				const dentistTestimonials = [
-					{
-						name: 'Dr med. dent. Manuela Brajković-Deković',
-						affiliation: 'Dental Clinic Poreč, Croatia',
-						quote: 'Tetric Prime has a creamy consistency, yet it is stable and very easy to adapt. I\'m looking forward to using it in my practice.',
-						image: 'https://www.ivoclar.com/cache-buster-1/GLOBAL%20-%20MEDIA/Products/Composite/Tetric%20Line/32964/image-thumb__32964__cms_image_banner__100/Jevremovic_SW.53088855.jpg'
-					},
-					{
-						name: 'Dr Nicola Ragazzini',
-						affiliation: 'Bologna, Italy',
-						quote: 'Fast-curing materials such as Tetric PowerFill and Tetric PowerFlow, which can be applied in layers of up to 4 mm, enable us to improve the patient experience in our dental practice. Simultaneously, we can optimize chairside time, as the dental bonding and layering procedure in the posterior area is less time consuming.',
-						image: 'https://www.ivoclar.com/cache-buster-1/GLOBAL%20-%20MEDIA/Products/Composite/Tetric%20Line/33032/image-thumb__33032__cms_image_banner__100/Ragazzini_SW.59aa5c5d.jpg'
-					}
-				];
-				return (
-					<section className="py-24 px-4 md:px-6 bg-white" aria-label="Testimonials from dentists">
-						<div className="max-w-5xl mx-auto">
-							<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-16 tracking-tight text-center">What dentists say about Tetric</h2>
-							<div className="space-y-24 md:space-y-28">
-								{dentistTestimonials.map((t, i) => (
-									<article
-										key={i}
-										className={`grid grid-cols-1 md:grid-cols-[auto,1fr] gap-8 md:gap-12 items-center ${i % 2 === 1 ? 'md:grid-flow-dense' : ''}`}
-									>
-										{/* Headshot: compact, circular, Ivoclar brand accent */}
-										<div className={`flex justify-center md:justify-start ${i % 2 === 1 ? 'md:col-start-2 md:justify-end' : ''}`}>
-											<div className="relative w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 flex-shrink-0 rounded-full overflow-hidden bg-gray-100 ring-4 ring-[#0a478b]/20 shadow-lg">
-												{/* eslint-disable-next-line @next/next/no-img-element */}
-												<img
-													src={t.image}
-													alt={t.name}
-													className={`w-full h-full object-cover object-top ${t.imagePosition === 'right' ? 'object-right' : 'object-center'}`}
-													onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling?.classList.remove('hidden'); }}
-												/>
-												<div className="hidden w-full h-full flex items-center justify-center text-gray-400 text-xs p-3 text-center">
-													<span>Photo</span>
-												</div>
-											</div>
-										</div>
-										{/* Quote block */}
-										<div className={`flex flex-col justify-center text-center md:text-left ${i % 2 === 1 ? 'md:col-start-1 md:row-start-1' : ''}`}>
-											<blockquote className="text-[#0a478b]">
-												<p className="text-lg md:text-xl leading-relaxed mb-5 font-normal">&ldquo;{t.quote}&rdquo;</p>
-												<footer>
-													<cite className="not-italic font-bold text-[#0a478b] text-lg md:text-xl block">{t.name}</cite>
-													<span className="text-[#0a478b]/80 text-sm md:text-base mt-0.5 block">{t.affiliation}</span>
-												</footer>
-											</blockquote>
-										</div>
-									</article>
-								))}
-							</div>
-						</div>
-					</section>
-				);
-			})()}
+            {/* Dentist testimonials are extracted to a reusable component and disabled for now. */}
+            {SHOW_DENTIST_TESTIMONIALS ? <DentistTestimonials /> : null}
 
             {/* Conversion: Optional video or infographic */}
             {(() => {
@@ -1282,120 +1095,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 			})()}
 
             {/* Conversion: Book a practice demo */}
-            <section id="contact" className="py-16 px-4 md:px-6 bg-white border-t border-gray-200">
-				<div className="max-w-4xl mx-auto">
-					<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-2">Book a practice demo</h2>
-					<p className="text-gray-600 mb-6">Request a practice demo and see the Tetric line in action.</p>
-					<p className="text-sm text-gray-600 mb-6">
-						Please be informed about our{' '}
-						<a href="/privacy" className="text-[#0a478b] hover:underline">Privacy Policy</a>.
-					</p>
-					<form onSubmit={handleFormSubmit} className="space-y-5">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-							{/* Left column */}
-							<div className="space-y-5">
-								<div>
-									<label htmlFor="contact-firstName" className="block text-sm font-medium text-gray-700 mb-1">First name *</label>
-									<input id="contact-firstName" type="text" name="firstName" value={formData.firstName} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b]" />
-								</div>
-								<div>
-									<label htmlFor="contact-companyName" className="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
-									<input id="contact-companyName" type="text" name="companyName" value={formData.companyName} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b]" />
-								</div>
-								<div>
-									<label htmlFor="contact-jobTitle" className="block text-sm font-medium text-gray-700 mb-1">Job Title *</label>
-									<input id="contact-jobTitle" type="text" name="jobTitle" value={formData.jobTitle} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b]" />
-								</div>
-								<div>
-									<label htmlFor="contact-address" className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
-									<input id="contact-address" type="text" name="address" value={formData.address} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b]" />
-								</div>
-								<div>
-									<label htmlFor="contact-stateProvince" className="block text-sm font-medium text-gray-700 mb-1">Choose your State / Province *</label>
-									<select id="contact-stateProvince" name="stateProvince" value={formData.stateProvince} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b] bg-white">
-										<option value="">Select…</option>
-										<option value="AL">Alabama</option>
-										<option value="CA">California</option>
-										<option value="FL">Florida</option>
-										<option value="NY">New York</option>
-										<option value="TX">Texas</option>
-									</select>
-								</div>
-								<div>
-									<label htmlFor="contact-country" className="block text-sm font-medium text-gray-700 mb-1">Country *</label>
-									<select id="contact-country" name="country" value={formData.country} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b] bg-white">
-										<option value="">Select…</option>
-										<option value="US">United States</option>
-										<option value="CA">Canada</option>
-										<option value="DE">Germany</option>
-										<option value="CH">Switzerland</option>
-										<option value="AT">Austria</option>
-										<option value="IT">Italy</option>
-										<option value="HR">Croatia</option>
-									</select>
-								</div>
-							</div>
-							{/* Right column */}
-							<div className="space-y-5">
-								<div>
-									<label htmlFor="contact-lastName" className="block text-sm font-medium text-gray-700 mb-1">Last name *</label>
-									<input id="contact-lastName" type="text" name="lastName" value={formData.lastName} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b]" />
-								</div>
-								<div>
-									<label htmlFor="contact-email" className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-									<input id="contact-email" type="email" name="email" value={formData.email} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b]" />
-								</div>
-								<div>
-									<label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-									<input id="contact-phone" type="tel" name="phone" value={formData.phone} onChange={handleFormChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b]" />
-								</div>
-								<div>
-									<label htmlFor="contact-city" className="block text-sm font-medium text-gray-700 mb-1">City *</label>
-									<input id="contact-city" type="text" name="city" value={formData.city} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b]" />
-								</div>
-								<div>
-									<label htmlFor="contact-postCode" className="block text-sm font-medium text-gray-700 mb-1">Post code *</label>
-									<input id="contact-postCode" type="text" name="postCode" value={formData.postCode} onChange={handleFormChange} required className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b]" />
-								</div>
-								<div>
-									<label htmlFor="contact-productDemo" className="block text-sm font-medium text-gray-700 mb-1">Select product for your practice demo</label>
-									<select id="contact-productDemo" name="productDemo" value={formData.productDemo} onChange={handleFormChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b] bg-white">
-										<option value="">Select…</option>
-										<option value="tetric-prime">Tetric Prime</option>
-										<option value="tetric-evoflow">Tetric EvoFlow</option>
-										<option value="tetric-powerflow">Tetric PowerFlow</option>
-										<option value="tetric-powerfill">Tetric PowerFill</option>
-									</select>
-								</div>
-							</div>
-						</div>
-						{/* Checkboxes */}
-						<div className="space-y-4 pt-2">
-							<label className="flex items-start gap-3 cursor-pointer">
-								<input type="checkbox" name="termsAccepted" checked={formData.termsAccepted} onChange={handleFormChange} className="mt-1 rounded border-gray-300 text-[#0a478b] focus:ring-[#0a478b]" />
-								<span className="text-sm text-gray-700">
-									I&apos;ve read and understood the <a href="/terms" className="text-[#0a478b] hover:underline">General Terms of Use</a>. *
-								</span>
-							</label>
-							<label className="flex items-start gap-3 cursor-pointer">
-								<input type="checkbox" name="marketingOptIn" checked={formData.marketingOptIn} onChange={handleFormChange} className="mt-1 rounded border-gray-300 text-[#0a478b] focus:ring-[#0a478b]" />
-								<span className="text-sm text-gray-700">
-									I would like to receive newsletters from Ivoclar and agree to the <a href="/marketing-terms" className="text-[#0a478b] hover:underline">Marketing Terms of use</a>.
-								</span>
-							</label>
-						</div>
-						<div className="flex justify-end pt-4">
-							<button
-								type="submit"
-								disabled={formSubmitting}
-								className="bg-[#0a478b] hover:bg-[#083a70] disabled:opacity-70 text-white font-bold px-8 py-4 rounded-lg transition-colors"
-							>
-								{formSubmitting ? 'Requesting…' : 'Request demo'}
-							</button>
-						</div>
-					</form>
-				</div>
-			</section>
+            <LeadCaptureForm pathname={pathname} pageContext={pageContext} />
 
             {/* Online Shop / Marketplace — primary: contact, secondary: shop now */}
             <section className="py-16 px-4 md:px-6 bg-gray-50 border-t border-gray-200">

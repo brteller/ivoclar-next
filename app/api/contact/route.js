@@ -1,18 +1,29 @@
 const CONTACT_WEBHOOK = process.env.CONTACT_WEBHOOK_URL;
+const SALESFORCE_WEBHOOK = process.env.SALESFORCE_WEBHOOK_URL;
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    if (CONTACT_WEBHOOK) {
-      const res = await fetch(CONTACT_WEBHOOK, {
+    const targets = [
+      { url: CONTACT_WEBHOOK, name: 'contact_webhook' },
+      { url: SALESFORCE_WEBHOOK, name: 'salesforce_webhook' },
+    ].filter((target) => Boolean(target.url));
+
+    for (const target of targets) {
+      const res = await fetch(target.url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
       if (!res.ok) {
-        return new Response(JSON.stringify({ ok: false }), { status: 502 });
+        console.error('Contact forward failed:', {
+          target: target.name,
+          status: res.status,
+        });
+        return new Response(JSON.stringify({ ok: false, target: target.name }), { status: 502 });
       }
     }
+
     return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (e) {
     console.error(e);
