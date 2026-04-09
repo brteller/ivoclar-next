@@ -534,7 +534,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 		const benefitsHeadline = c?.benefits_headline || 'Why Tetric';
 		const videoUrl = c?.video_url || null;
 		const infographicUrl = c?.infographic_url || c?.secondary_image_url || null;
-		const ctaText = c?.cta_text || 'Request information';
+		const ctaText = c?.cta_text || 'Try it Today';
 		const testimonialQuote = c?.testimonial_quote || 'When a patient needs me to save the day, I reach for the Tetric line of composites. Tetric and Class I/II posterior bulk restorations are made for each other.';
 		const testimonialAuthor = c?.testimonial_author || 'Dr. David Rice';
 		const testimonialTitle = c?.testimonial_title || 'IgniteDDS';
@@ -652,7 +652,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
                             />
                         </a>
 
-                        {/* Right: Search, Language, Book a demo CTA */}
+                        {/* Right: Search, Language, primary CTA */}
                         <div className="flex items-center gap-5 flex-shrink-0 ml-auto">
                             
                             <a
@@ -668,7 +668,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
                                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                                 className="bg-[#0a478b] hover:bg-[#083a70] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
                             >
-                                Book a demo
+                                Try it Today
                             </button>
                         </div>
                     </div>
@@ -859,29 +859,46 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 				</div>
 			</section>
 
-            {/* Product lines — tabs, copy, image, specs, Learn more CTA */}
+            {/* Product lines — tabs, copy, image, specs, primary CTA link */}
             <section className="py-20 px-4 md:px-6 bg-gray-50">
 				<div className="max-w-6xl mx-auto">
-					<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-8 tracking-tight">
+					<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-3 tracking-tight">
 						{pageContext?.category ? `Tetric Line for ${pageContext.category}` : 'Tetric Line'}
 					</h2>
-					{/* Tabs */}
-					<div className="border-b border-gray-200 mb-10 overflow-x-auto">
-						<nav className="flex gap-1 min-w-0" aria-label="Product line">
-							{visibleProducts.map((product, i) => (
-								<button
-									key={product.id}
-									type="button"
-									onClick={() => setSelectedProductIndex(i)}
-									className={`flex-shrink-0 py-3 px-4 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
-										safeProductIndex === i
-											? 'text-[#0a478b] border-[#0a478b]'
-											: 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'
-									}`}
-								>
-									{product.name}
-								</button>
-							))}
+					<p className="text-sm text-gray-600 mb-2 max-w-3xl">
+						Select a product below to view details and specifications — tap or click to switch.
+					</p>
+					<p id="tetric-product-picker-label" className="text-xs font-semibold text-[#0a478b] uppercase tracking-wide mb-3">
+						Choose a product
+					</p>
+					<div className="mb-10 w-full">
+						<nav
+							className="grid w-full grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4 xl:gap-4"
+							role="tablist"
+							aria-labelledby="tetric-product-picker-label"
+							aria-label="Tetric product line"
+						>
+							{visibleProducts.map((product, i) => {
+								const selected = safeProductIndex === i;
+								return (
+									<button
+										key={product.id}
+										id={`tetric-product-tab-${product.id}`}
+										type="button"
+										role="tab"
+										aria-selected={selected}
+										tabIndex={0}
+										onClick={() => setSelectedProductIndex(i)}
+										className={`w-full min-h-[3.25rem] sm:min-h-[3.5rem] rounded-xl px-4 py-3 text-base font-medium transition-all border-2 shadow-sm flex items-center justify-center text-center leading-snug focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0a478b] focus-visible:ring-offset-2 ${
+											selected
+												? 'bg-[#0a478b] text-white border-[#0a478b]'
+												: 'bg-white text-gray-800 border-gray-200 hover:border-[#0a478b]/45 hover:text-[#0a478b]'
+										}`}
+									>
+										{product.name}
+									</button>
+								);
+							})}
 						</nav>
 					</div>
 					{/* Selected product content — product left (larger), title + subtitle right; then description full-width below */}
@@ -889,6 +906,9 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 						const p = currentProduct;
 						return (
 							<div
+								role="tabpanel"
+								id={`tetric-product-panel-${p.id}`}
+								aria-labelledby={`tetric-product-tab-${p.id}`}
 								className="relative rounded-2xl bg-white p-8 md:p-10 overflow-hidden"
 								style={{
 									boxShadow: '0 4px 20px rgba(0, 166, 81, 0.08)',
@@ -994,7 +1014,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 											href={p.learnMoreUrl}
 											className="inline-flex items-center gap-2 bg-[#0a478b] hover:bg-[#083a70] text-white font-semibold px-5 py-3 rounded-lg text-sm transition-colors"
 										>
-											Learn more
+											Try it Today
 											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
 										</a>
 								{/* Vimeo sections — up to 2, each with optional title/subtitle above video. Hidden when no vimeoId is set. */}

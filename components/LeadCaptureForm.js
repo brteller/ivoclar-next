@@ -201,7 +201,7 @@ export default function LeadCaptureForm({ pathname = '', pageContext = {} }) {
 
           <div className="flex justify-end pt-4">
             <button type="submit" disabled={formSubmitting} className="bg-[#0a478b] hover:bg-[#083a70] disabled:opacity-70 text-white font-bold px-8 py-4 rounded-lg transition-colors">
-              {formSubmitting ? 'Sending…' : 'Send'}
+              {formSubmitting ? 'Sending…' : 'Try it Today'}
             </button>
           </div>
         </form>
