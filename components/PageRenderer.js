@@ -918,8 +918,8 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 								<div className="absolute inset-0 z-[2] bg-black/50" aria-hidden />
 							</>
 						)}
-						<div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-20">
-							<div className="max-w-xl">
+						<div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 py-10 md:py-20">
+							<div className="max-w-[22rem] sm:max-w-xl">
 								{/* Gradient border with transparent fill; inner area shows hero through bg-black/50 */}
 								<div
 									className="relative rounded-tr-lg"
@@ -927,12 +927,12 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 										border: '1px solid #00a651',
 									}}
 								>
-									<div className="rounded-tr-[calc(0.5rem-2px)] p-8">
-										<h2 className="text-3xl md:text-4xl lg:text-7xl text-white font-light leading-tight">
+									<div className="rounded-tr-[calc(0.5rem-2px)] p-5 sm:p-8">
+										<h2 className="text-[2rem] sm:text-4xl lg:text-7xl text-white font-light leading-tight">
 											Unleash <br></br>your inner
-											<div className="font-bold text-8xl text-white">Superhero</div>
+											<div className="font-bold text-5xl sm:text-6xl lg:text-8xl text-white">Superhero</div>
 										</h2>
-										<h1 className="text-white text-lg md:text-5xl mt-3 font-light">
+										<h1 className="text-white text-base sm:text-lg md:text-5xl mt-2 sm:mt-3 font-light leading-snug md:leading-tight">
 											{htmlContent?.category?.name ? (
 												<>
 													With Tetric {htmlContent.category.name}.
@@ -944,11 +944,11 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 											)}
 										</h1>
 
-										<div className="flex flex-wrap mb-8 mt-12 overflow-hidden items-center gap-6">
+										<div className="flex flex-wrap mb-2 sm:mb-8 mt-7 sm:mt-12 overflow-hidden items-center gap-4 sm:gap-6">
 											<button
 												type="button"
 												onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-												className="inline-block px-8 py-4 rounded-full bg-white text-black font-bold text-lg transition-all shadow-lg hover:opacity-95"
+												className="inline-block px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-white text-black font-bold text-base sm:text-lg transition-all shadow-lg hover:opacity-95"
 												
 											>
 												{conv.ctaText}
