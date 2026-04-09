@@ -61,7 +61,7 @@ export default function SuperheroTestimonialCards({ testimonialIds = DEFAULT_IDS
     <div className={gridClassName}>
       {visibleDoctors.map((doctor) => (
         <article key={doctor.id} className="flex flex-col">
-          <div className="rounded-xl flex-1 flex flex-col overflow-hidden border border-[#00a651]">
+          <div className="flex-1 flex flex-col overflow-hidden border border-[#00a651]">
             <div className="rounded-xl bg-blue-950 flex flex-col h-full overflow-hidden">
               <div className="aspect-[23/24] w-full flex-shrink-0 overflow-hidden bg-gray-800">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

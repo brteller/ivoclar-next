@@ -699,7 +699,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 							<div className="max-w-xl">
 								{/* Gradient border with transparent fill; inner area shows hero through bg-black/50 */}
 								<div
-									className="relative rounded-tr-lg rounded"
+									className="relative rounded-tr-lg"
 									style={{
 										border: '1px solid #00a651',
 									}}
@@ -873,7 +873,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 					</p>
 					<div className="mb-10 w-full">
 						<nav
-							className="grid w-full grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4 xl:gap-4"
+							className="flex flex-wrap gap-3 sm:gap-4 justify-start"
 							role="tablist"
 							aria-labelledby="tetric-product-picker-label"
 							aria-label="Tetric product line"
@@ -889,11 +889,17 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 										aria-selected={selected}
 										tabIndex={0}
 										onClick={() => setSelectedProductIndex(i)}
-										className={`w-full min-h-[3.25rem] sm:min-h-[3.5rem] rounded-xl px-4 py-3 text-base font-medium transition-all border-2 shadow-sm flex items-center justify-center text-center leading-snug focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0a478b] focus-visible:ring-offset-2 ${
-											selected
-												? 'bg-[#0a478b] text-white border-[#0a478b]'
-												: 'bg-white text-gray-800 border-gray-200 hover:border-[#0a478b]/45 hover:text-[#0a478b]'
-										}`}
+										className={`
+											min-h-[3rem] min-w-[10.5rem] max-w-full sm:min-w-[11.5rem]
+											rounded-md px-5 py-3.5 text-sm sm:text-base font-semibold text-center leading-snug
+											transition-all duration-150
+											border-2
+											focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0a478b] focus-visible:ring-offset-2
+											${selected
+												? 'bg-[#0a478b] text-white border-[#062d56] shadow-[0_2px_0_0_#052847,0_6px_16px_rgba(10,71,139,0.35)] hover:bg-[#083a70]'
+												: 'bg-gradient-to-b from-white to-gray-100 text-gray-900 border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.06)] hover:border-[#0a478b]/55 hover:text-[#0a478b] hover:shadow-[0_2px_0_0_rgba(10,71,139,0.15),0_6px_16px_rgba(10,71,139,0.12)] hover:-translate-y-px active:translate-y-0 active:shadow-[0_1px_0_0_rgba(0,0,0,0.1)]'
+											}
+										`}
 									>
 										{product.name}
 									</button>
@@ -909,7 +915,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 								role="tabpanel"
 								id={`tetric-product-panel-${p.id}`}
 								aria-labelledby={`tetric-product-tab-${p.id}`}
-								className="relative rounded-2xl bg-white p-8 md:p-10 overflow-hidden"
+								className="relative rounded-none bg-white p-8 md:p-10 overflow-hidden"
 								style={{
 									boxShadow: '0 4px 20px rgba(0, 166, 81, 0.08)',
 									borderTop: '3px solid rgba(10, 71, 139, 0.5)',
@@ -924,13 +930,13 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 									<div className="order-1 flex flex-col justify-center">
 										<h3 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-3">{p.name}</h3>
 										{p.tagline && (
-											<div className="border border-[#0a478b]/40 rounded-lg px-4 py-3 bg-[#0a478b]/5">
+											<div className="border border-[#0a478b]/40 rounded-none px-4 py-3 bg-[#0a478b]/5">
 												<p className="text-[#0a478b] text-base md:text-lg font-medium">{p.tagline}</p>
 											</div>
 										)}
 									</div>
 									{/* Right: product image — larger on page */}
-									<div className="order-2 w-full min-h-[260px] lg:min-h-[320px] bg-gray-50 rounded-xl flex items-center justify-center overflow-hidden">
+									<div className="order-2 w-full min-h-[260px] lg:min-h-[320px] bg-gray-50 rounded-none flex items-center justify-center overflow-hidden">
 										{/* eslint-disable-next-line @next/next/no-img-element */}
 										<img
 											src={p.image}
@@ -940,7 +946,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 										/>
 										<div className="hidden text-center text-gray-400 text-sm p-4">
 											<span className="block font-medium text-gray-500 mb-1">Product image</span>
-											<span>Add asset at <code className="text-xs bg-gray-200 px-1 rounded">{p.image}</code></span>
+											<span>Add asset at <code className="text-xs bg-gray-200 px-1 rounded-none">{p.image}</code></span>
 										</div>
 									</div>
 								</div>
@@ -958,7 +964,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 										)}
 										{p.exposureTable && p.exposureTable.headers && p.exposureTable.rows && (
 											<div className="mb-6 overflow-x-auto">
-												<table className="w-full min-w-[520px] border border-gray-200 rounded-lg overflow-hidden text-sm">
+												<table className="w-full min-w-[520px] border border-gray-200 rounded-none overflow-hidden text-sm">
 													<thead>
 														<tr className="bg-[#0a478b] text-white">
 															{p.exposureTable.headers.map((h, i) => (
@@ -1012,7 +1018,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 										)}
 										<a
 											href={p.learnMoreUrl}
-											className="inline-flex items-center gap-2 bg-[#0a478b] hover:bg-[#083a70] text-white font-semibold px-5 py-3 rounded-lg text-sm transition-colors"
+											className="inline-flex items-center gap-2 bg-[#0a478b] hover:bg-[#083a70] text-white font-semibold px-5 py-3 rounded-none text-sm transition-colors"
 										>
 											Try it Today
 											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
@@ -1030,11 +1036,11 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 												<div key={i} className="space-y-3">
 													{sec.title && <h4 className="text-xl font-bold text-[#0a478b]">{sec.title}</h4>}
 													{sec.subtitle && (
-														<div className="border border-[#0a478b]/40 rounded-lg px-4 py-2 bg-[#0a478b]/5 w-fit">
+														<div className="border border-[#0a478b]/40 rounded-none px-4 py-2 bg-[#0a478b]/5 w-fit">
 															<p className="text-[#0a478b] text-sm font-medium">{sec.subtitle}</p>
 														</div>
 													)}
-													<div className="aspect-video w-full rounded-xl overflow-hidden bg-black">
+													<div className="aspect-video w-full rounded-none overflow-hidden bg-black">
 														<iframe
 															title={sec.title || `${p.name} video ${i + 1}`}
 															src={`https://player.vimeo.com/video/${sec.vimeoId}`}
@@ -1055,12 +1061,12 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 											<div className="flex flex-col justify-center">
 												<h4 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-3">{p.secondaryPhoto.title}</h4>
 												{p.secondaryPhoto.subtitle && (
-													<div className="border border-[#0a478b]/40 rounded-lg px-4 py-3 bg-[#0a478b]/5">
+													<div className="border border-[#0a478b]/40 rounded-none px-4 py-3 bg-[#0a478b]/5">
 														<p className="text-[#0a478b] text-base md:text-lg font-medium">{p.secondaryPhoto.subtitle}</p>
 													</div>
 												)}
 											</div>
-											<div className="w-full min-h-[260px] lg:min-h-[320px] bg-gray-50 rounded-xl flex items-center justify-center overflow-hidden">
+											<div className="w-full min-h-[260px] lg:min-h-[320px] bg-gray-50 rounded-none flex items-center justify-center overflow-hidden">
 												{/* eslint-disable-next-line @next/next/no-img-element */}
 												<img
 													src={p.secondaryPhoto.image}
