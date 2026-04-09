@@ -967,12 +967,12 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 							<div className="max-w-[22rem] sm:max-w-xl">
 								{/* Gradient border with transparent fill; inner area shows hero through bg-black/50 */}
 								<div
-									className="relative rounded-tr-lg"
+									className="relative"
 									style={{
 										border: '1px solid #00a651',
 									}}
 								>
-									<div className="rounded-tr-[calc(0.5rem-2px)] p-5 sm:p-8">
+									<div className="p-5 sm:p-8">
 										<h2 className="text-[2rem] sm:text-4xl lg:text-7xl text-white font-light leading-tight">
 											Unleash <br></br>your inner
 											<div className="font-bold text-5xl sm:text-6xl lg:text-8xl text-white">Superhero</div>

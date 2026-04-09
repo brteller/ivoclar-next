@@ -1,8 +1,8 @@
-// File: /Users/brandonteller/Documents/GitHub/ivoclar-next/app/[slug1]/page.js
-import * as entry from '../../../../app/[slug1]/page.js'
+// File: /Users/brandonteller/Documents/GitHub/ivoclar-next/app/page.js
+import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
-type TEntry = typeof import('../../../../app/[slug1]/page.js')
+type TEntry = typeof import('../../../app/page.js')
 
 type SegmentParams<T extends Object = any> = T extends Record<string, any>
   ? { [K in keyof T]: T[K] extends string ? string | string[] | undefined : never }
