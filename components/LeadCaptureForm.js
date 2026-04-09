@@ -87,7 +87,7 @@ export default function LeadCaptureForm() {
           <input type="hidden" name="utm_medium" value={formData.utm_medium} />
           <input type="hidden" name="utm_campaign" value={formData.utm_campaign} />
           <p className="text-sm text-gray-700">
-          Request a in-office demo and see the Tetric line in action
+          Request an in-office demo and see the Tetric line in action
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

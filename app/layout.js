@@ -6,6 +6,11 @@ export const metadata = {
     template: '%s'
   },
   description: "Tetric by Ivoclar — premium dental composite resins and restorative materials for durable, aesthetic restorations. Trusted by dental professionals worldwide.",
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
   openGraph: {
     type: 'website',
     siteName: 'Tetric by Ivoclar'

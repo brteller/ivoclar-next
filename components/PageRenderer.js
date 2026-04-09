@@ -11,6 +11,8 @@ import LeadCaptureForm from '@/components/LeadCaptureForm';
 
 /** Default top hero background (first section). */
 const HERO_TOP_IMAGE = '/images/top-hero.png';
+/** Default-hero mobile override: use Dr. Tiffani Dunn with gradient treatment */
+const HERO_TOP_IMAGE_DEFAULT_MOBILE = '/images/superhero/tiffany.jpg';
 /** Posterior-restoration categories: Dr. Anthony Mennito — same asset as superhero testimonial card */
 const HERO_TOP_IMAGE_POSTERIOR_RESTORATION = '/images/superhero/mennito.jpg';
 /** Light-cure categories: Dr. Luana Oliveira-Hass */
@@ -860,6 +862,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 					? HERO_TOP_IMAGE_LIGHT_CURE
 					: HERO_TOP_IMAGE;
 				const isPosteriorHero = isAnthonyTopHeroCategory || isLightCureCategory;
+				const heroBgUrlMobile = isPosteriorHero ? heroBgUrl : HERO_TOP_IMAGE_DEFAULT_MOBILE;
 				const headlineParts = (conv.heroHeadline || 'Unleash your inner Superhero').split(/(\s+)/);
 				const lastWord = headlineParts[headlineParts.length - 1];
 				const beforeLast = headlineParts.slice(0, -1).join('');
@@ -870,12 +873,18 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 					backgroundRepeat: 'no-repeat',
 					backgroundPosition: 'center top',
 				};
+				const heroBgStyleMobile = {
+					backgroundImage: `url(${heroBgUrlMobile})`,
+					backgroundSize: 'cover',
+					backgroundRepeat: 'no-repeat',
+					backgroundPosition: 'center top',
+				};
 				return (
 					<section
 						className={
 							isPosteriorHero
 								? 'relative flex min-h-[90vh] items-start bg-black pt-16 pb-20 md:items-center md:pt-0 md:pb-0'
-								: 'relative flex min-h-[90vh] items-center bg-gray-900'
+								: 'relative flex min-h-[90vh] items-start bg-gray-900 pt-16 pb-20 md:items-center md:pt-0 md:pb-0'
 						}
 					>
 						{isPosteriorHero ? (
@@ -902,7 +911,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 									aria-hidden
 								/>
 								{/* Mobile: full-bleed + top/left weighting (flyer crop); desktop uses split above */}
-								<div className="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat md:hidden" style={heroBgStyle} aria-hidden />
+								<div className="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat md:hidden" style={heroBgStyleMobile} aria-hidden />
 								<div
 									className="pointer-events-none absolute inset-0 z-[1] md:hidden"
 									style={{
@@ -914,8 +923,17 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 							</>
 						) : (
 							<>
-								<div className="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat" style={heroBgStyle} aria-hidden />
-								<div className="absolute inset-0 z-[2] bg-black/50" aria-hidden />
+								<div className="absolute inset-0 z-0 hidden md:block bg-cover bg-top bg-no-repeat" style={heroBgStyle} aria-hidden />
+								<div className="absolute inset-0 z-[2] hidden md:block bg-black/50" aria-hidden />
+								<div className="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat md:hidden" style={heroBgStyleMobile} aria-hidden />
+								<div
+									className="pointer-events-none absolute inset-0 z-[1] md:hidden"
+									style={{
+										background:
+											'linear-gradient(180deg, rgb(0 0 0 / 0.92) 0%, rgb(0 0 0 / 0.45) 42%, rgb(0 0 0 / 0.15) 62%, transparent 82%)',
+									}}
+									aria-hidden
+								/>
 							</>
 						)}
 						<div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 py-10 md:py-20">
@@ -1031,7 +1049,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 						<div className="absolute inset-0 bg-blue-900/80" aria-hidden />
 						<div className="relative max-w-7xl mx-auto">
 							<h2 className="text-2xl md:text-3xl lg:text-4xl text-white font-normal text-center mb-4">
-								Superheroes <span className="font-bold">for their patients</span>
+							<span className="font-bold">Superheroes for their patients</span>
 								
 							</h2>
 							<p className="text-white/90 text-lg md:text-xl text-center mb-12 max-w-2xl mx-auto">
