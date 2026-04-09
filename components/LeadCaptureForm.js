@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const JOB_TITLE_OPTIONS = [
   { value: '01', label: 'Dentist' },
@@ -33,9 +32,9 @@ const PRODUCT_OPTIONS = [
   { value: 'Tetric EvoFlow', label: 'Tetric EvoFlow' },
 ];
 
-export default function LeadCaptureForm({ pathname = '', pageContext = {} }) {
-  const router = useRouter();
-  const [formSubmitting, setFormSubmitting] = useState(false);
+const PARDOT_FORM_ACTION = 'https://campaign.ivoclar.com/l/794073/2025-04-07/489ns7';
+
+export default function LeadCaptureForm() {
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
@@ -69,68 +68,24 @@ export default function LeadCaptureForm({ pathname = '', pageContext = {} }) {
     setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.privacy) {
-      alert('Please read and accept the General Terms of Use to continue.');
-      return;
-    }
-
-    setFormSubmitting(true);
-    const payload = {
-      ...formData,
-      page_path: pathname,
-      category: pageContext?.category ?? null,
-      country_context: pageContext?.country ?? null,
-      state_context: pageContext?.state ?? null,
-      city_context: pageContext?.city ?? null,
-      // Match the upstream form-style structure for Salesforce testing.
-      formbuilder_3318: {
-        formId: '3318',
-        firstname: formData.firstname,
-        lastname: formData.lastname,
-        company: formData.company,
-        email: formData.email,
-        jobtitle: formData.jobtitle,
-        phone: formData.phone,
-        address: formData.address,
-        city: formData.city,
-        state: formData.state,
-        zip: formData.zip,
-        country: formData.country,
-        products: formData.products,
-        privacy: String(formData.privacy),
-        doubleoptin: formData.doubleoptin ? ['true'] : [],
-        utm_source: formData.utm_source,
-        utm_medium: formData.utm_medium,
-        utm_campaign: formData.utm_campaign,
-        utm_term: formData.utm_term,
-        utm_id: formData.utm_id,
-        utm_content: formData.utm_content,
-      },
-    };
-
-    try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error('Contact submission failed');
-      router.push('/thank-you');
-    } catch (error) {
-      console.error('Form submission error:', error);
-      alert('There was an error submitting your form. Please try again.');
-    } finally {
-      setFormSubmitting(false);
-    }
-  };
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setFormData((prev) => ({
+      ...prev,
+      utm_source: params.get('utm_source') ?? '',
+      utm_medium: params.get('utm_medium') ?? '',
+      utm_campaign: params.get('utm_campaign') ?? '',
+    }));
+  }, []);
 
   return (
     <section id="contact" className="py-16 px-4 md:px-6 bg-white border-t border-gray-200">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-8 tracking-tight">Discover the power in person</h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form action={PARDOT_FORM_ACTION} method="post" className="space-y-5">
+          <input type="hidden" name="utm_source" value={formData.utm_source} />
+          <input type="hidden" name="utm_medium" value={formData.utm_medium} />
+          <input type="hidden" name="utm_campaign" value={formData.utm_campaign} />
           <p className="text-sm text-gray-700">
           Request a in-office demo and see the Tetric line in action
           </p>
@@ -177,7 +132,7 @@ export default function LeadCaptureForm({ pathname = '', pageContext = {} }) {
 
           <div className="space-y-4 pt-2">
             <label className="flex items-start gap-3 cursor-pointer">
-              <input type="checkbox" name="privacy" checked={formData.privacy} onChange={handleFormChange} className="mt-1 rounded border-gray-300 text-[#0a478b] focus:ring-[#0a478b]" />
+              <input type="checkbox" name="privacy" value="true" checked={formData.privacy} onChange={handleFormChange} required className="mt-1 rounded border-gray-300 text-[#0a478b] focus:ring-[#0a478b]" />
               <span className="text-sm text-gray-700">
                 I&apos;ve read and understood the{' '}
                 <a href="https://www.ivoclar.com/en_us/legal/general-terms-of-use" target="_blank" rel="noopener noreferrer" className="text-[#0a478b] hover:underline">
@@ -186,7 +141,7 @@ export default function LeadCaptureForm({ pathname = '', pageContext = {} }) {
               </span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
-              <input type="checkbox" name="doubleoptin" checked={formData.doubleoptin} onChange={handleFormChange} className="mt-1 rounded border-gray-300 text-[#0a478b] focus:ring-[#0a478b]" />
+              <input type="checkbox" name="doubleoptin" value="true" checked={formData.doubleoptin} onChange={handleFormChange} className="mt-1 rounded border-gray-300 text-[#0a478b] focus:ring-[#0a478b]" />
               <span className="text-sm text-gray-700">
                 I would like to receive newsletters from Ivoclar and agree to the{' '}
                 <a href="https://www.ivoclar.com/en_us/legal/marketing-consent" target="_blank" rel="noopener noreferrer" className="text-[#0a478b] hover:underline">
@@ -197,8 +152,8 @@ export default function LeadCaptureForm({ pathname = '', pageContext = {} }) {
           </div>
 
           <div className="flex justify-end pt-4">
-            <button type="submit" disabled={formSubmitting} className="bg-[#0a478b] hover:bg-[#083a70] disabled:opacity-70 text-white font-bold px-8 py-4 rounded-lg transition-colors">
-              {formSubmitting ? 'Sending…' : 'Try it Today'}
+            <button type="submit" className="bg-[#0a478b] hover:bg-[#083a70] text-white font-bold px-8 py-4 rounded-lg transition-colors">
+              Try it Today
             </button>
           </div>
         </form>

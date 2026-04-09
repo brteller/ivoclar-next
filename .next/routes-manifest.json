@@ -1,1 +1,98 @@
-{"version":3,"caseSensitive":false,"basePath":"","rewrites":{"beforeFiles":[],"afterFiles":[],"fallback":[]},"redirects":[{"source":"/:path+/","destination":"/:path+","permanent":true,"internal":true,"regex":"^(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))\\/$"}],"headers":[]}
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/[slug1]",
+      "regex": "^/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug1": "nxtPslug1"
+      },
+      "namedRegex": "^/(?<nxtPslug1>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[slug1]/[slug2]",
+      "regex": "^/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug1": "nxtPslug1",
+        "nxtPslug2": "nxtPslug2"
+      },
+      "namedRegex": "^/(?<nxtPslug1>[^/]+?)/(?<nxtPslug2>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[slug1]/[slug2]/[slug3]",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug1": "nxtPslug1",
+        "nxtPslug2": "nxtPslug2",
+        "nxtPslug3": "nxtPslug3"
+      },
+      "namedRegex": "^/(?<nxtPslug1>[^/]+?)/(?<nxtPslug2>[^/]+?)/(?<nxtPslug3>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[slug1]/[slug2]/[slug3]/[slug4]",
+      "regex": "^/([^/]+?)/([^/]+?)/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug1": "nxtPslug1",
+        "nxtPslug2": "nxtPslug2",
+        "nxtPslug3": "nxtPslug3",
+        "nxtPslug4": "nxtPslug4"
+      },
+      "namedRegex": "^/(?<nxtPslug1>[^/]+?)/(?<nxtPslug2>[^/]+?)/(?<nxtPslug3>[^/]+?)/(?<nxtPslug4>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/thank-you",
+      "regex": "^/thank\\-you(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/thank\\-you(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

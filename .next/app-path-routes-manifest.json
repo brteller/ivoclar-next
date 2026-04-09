@@ -1,0 +1,10 @@
+{
+  "/api/contact/route": "/api/contact",
+  "/_not-found/page": "/_not-found",
+  "/[slug1]/[slug2]/[slug3]/[slug4]/page": "/[slug1]/[slug2]/[slug3]/[slug4]",
+  "/[slug1]/page": "/[slug1]",
+  "/[slug1]/[slug2]/page": "/[slug1]/[slug2]",
+  "/page": "/",
+  "/[slug1]/[slug2]/[slug3]/page": "/[slug1]/[slug2]/[slug3]",
+  "/thank-you/page": "/thank-you"
+}
