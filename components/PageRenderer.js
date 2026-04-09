@@ -334,6 +334,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 	const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 	const [lastScrollY, setLastScrollY] = useState(0);
 	const [selectedProductIndex, setSelectedProductIndex] = useState(0);
+	const [isShopModalOpen, setIsShopModalOpen] = useState(false);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -443,6 +444,31 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 		: BUY_SECTION_PRODUCT_IDS;
 	const safeProductIndex = Math.min(Math.max(0, selectedProductIndex), Math.max(0, visibleProducts.length - 1));
 	const currentProduct = visibleProducts[safeProductIndex];
+	const SHOP_DESTINATIONS = [
+		{
+			id: 'tetric-powerfill',
+			label: 'Tetric PowerFill',
+			url: 'https://order.ivoclarusa.com/shop/composites/tetric-powerfill/',
+		},
+		{
+			id: 'tetric-powerflow',
+			label: 'Tetric PowerFlow',
+			url: 'https://order.ivoclarusa.com/shop/composites/tetric-powerflow/',
+		},
+	];
+	const productImageById = Object.fromEntries(TETRIC_PRODUCTS.map((p) => [p.id, p.image]));
+	const shopDestinationById = Object.fromEntries(SHOP_DESTINATIONS.map((x) => [x.id, x]));
+	const pageShopOptions = Array.from(new Set(visibleProducts.map((p) => p.id)))
+		.map((id) => shopDestinationById[id])
+		.filter(Boolean);
+	const resolvedShopOptions = pageShopOptions.length === 1 ? pageShopOptions : SHOP_DESTINATIONS;
+	const shouldUseShopModal = resolvedShopOptions.length > 1;
+	const primaryShopUrl = resolvedShopOptions[0]?.url || CREATOR.shopUrl;
+	const handleShopClick = (e) => {
+		if (!shouldUseShopModal) return;
+		e.preventDefault();
+		setIsShopModalOpen(true);
+	};
 
 	useEffect(() => {
 		const maxIndex = Math.max(0, visibleProducts.length - 1);
@@ -832,9 +858,10 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
                         <div className="flex items-center gap-5 flex-shrink-0 ml-auto">
                             
                             <a
-                                href={CREATOR.shopUrl}
-                                target={CREATOR.shopUrl.startsWith('http') ? '_blank' : undefined}
-                                rel={CREATOR.shopUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                href={primaryShopUrl}
+                                onClick={handleShopClick}
+                                target={!shouldUseShopModal ? '_blank' : undefined}
+                                rel={!shouldUseShopModal ? 'noopener noreferrer' : undefined}
                                 className="text-[#0a478b] text-sm font-medium hover:underline underline-offset-2 decoration-[#0a478b] hover:decoration-[#083a70] transition-colors"
                             >
                                 Shop
@@ -972,9 +999,10 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 												{conv.ctaText}
 											</button>
 											<a
-												href={CREATOR.shopUrl}
-												target={CREATOR.shopUrl.startsWith('http') ? '_blank' : undefined}
-												rel={CREATOR.shopUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+												href={primaryShopUrl}
+												onClick={handleShopClick}
+												target={!shouldUseShopModal ? '_blank' : undefined}
+												rel={!shouldUseShopModal ? 'noopener noreferrer' : undefined}
 												className="text-white font-medium hover:underline underline-offset-4 decoration-2 hover:opacity-90 transition-opacity"
 											>
 												Shop now
@@ -1066,9 +1094,10 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 									{conv.ctaText}
 								</button>
 								<a
-									href={CREATOR.shopUrl}
-									target={CREATOR.shopUrl.startsWith('http') ? '_blank' : undefined}
-									rel={CREATOR.shopUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+									href={primaryShopUrl}
+									onClick={handleShopClick}
+									target={!shouldUseShopModal ? '_blank' : undefined}
+									rel={!shouldUseShopModal ? 'noopener noreferrer' : undefined}
 									className="text-white font-medium underline underline-offset-4 decoration-2 hover:opacity-90 transition-opacity"
 								>
 									Shop now
@@ -1402,9 +1431,10 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 							Discover the power and buy now
 							</h2>
 							<a
-								href={CREATOR.shopUrl}
-								target={CREATOR.shopUrl.startsWith('http') ? '_blank' : undefined}
-								rel={CREATOR.shopUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+								href={primaryShopUrl}
+								onClick={handleShopClick}
+								target={!shouldUseShopModal ? '_blank' : undefined}
+								rel={!shouldUseShopModal ? 'noopener noreferrer' : undefined}
 								className="inline-flex items-center gap-2 bg-[#0a478b] hover:bg-[#083a70] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
 							>
 								Click here to go to the online shop
@@ -1449,6 +1479,53 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 					</div>
 				</div>
 			</section>
+
+			{isShopModalOpen && (
+				<div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
+					<div
+						className="absolute inset-0 bg-black/60"
+						onClick={() => setIsShopModalOpen(false)}
+						aria-hidden
+					/>
+					<div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+						<h3 className="text-xl font-bold text-[#0a478b] mb-2">Choose product to buy</h3>
+						<p className="text-sm text-gray-600 mb-5">
+							Select the product shop page you want to open.
+						</p>
+						<div className="space-y-3">
+							{resolvedShopOptions.map((opt) => (
+								<a
+									key={opt.id}
+									href={opt.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="w-full inline-flex items-center justify-between rounded-full border border-[#0a478b]/35 px-4 py-3.5 text-[#0a478b] font-semibold hover:bg-[#0a478b]/5 transition-colors"
+								>
+									<span className="inline-flex items-center gap-3 min-w-0">
+										<span className="h-14 w-14 rounded-full bg-white border-2 border-[#0a478b]/25 shadow-sm flex items-center justify-center overflow-hidden shrink-0">
+											{/* eslint-disable-next-line @next/next/no-img-element */}
+											<img
+												src={productImageById[opt.id]}
+												alt=""
+												className="h-full w-full object-contain p-1.5"
+											/>
+										</span>
+										<span className="truncate">{opt.label}</span>
+									</span>
+									<span aria-hidden>-&gt;</span>
+								</a>
+							))}
+						</div>
+						<button
+							type="button"
+							onClick={() => setIsShopModalOpen(false)}
+							className="mt-5 w-full rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2 transition-colors"
+						>
+							Close
+						</button>
+					</div>
+				</div>
+			)}
 
 			{/* Ivoclar-style Footer */}
 			<footer className="bg-[#0a478b] text-white">
