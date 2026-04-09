@@ -9,8 +9,19 @@ import EfficiencyCard from '@/components/EfficiencyCard';
 import SuperheroTestimonialCards from '@/components/SuperheroTestimonialCards';
 import LeadCaptureForm from '@/components/LeadCaptureForm';
 
-/** Top hero background — do not change; hero section must always use this image. */
+/** Default top hero background (first section). */
 const HERO_TOP_IMAGE = '/images/top-hero.png';
+/** Posterior-restoration categories: Dr. Anthony Mennito — same asset as superhero testimonial card */
+const HERO_TOP_IMAGE_POSTERIOR_RESTORATION = '/images/superhero/mennito.jpg';
+/** Light-cure categories: Dr. Luana Oliveira-Hass */
+const HERO_TOP_IMAGE_LIGHT_CURE = '/images/superhero/luana.jpg';
+
+/**
+ * Full-viewport overlay: hold solid black through the copy side, then feather across the 50% seam
+ * well into the photo (stops were too tight before → looked like a hard line).
+ */
+const HERO_POSTERIOR_SEAM_GRADIENT =
+	'linear-gradient(90deg, rgb(0 0 0) 0%, rgb(0 0 0) 40%, rgb(0 0 0 / 0.94) 46%, rgb(0 0 0 / 0.72) 50%, rgb(0 0 0 / 0.38) 56%, rgb(0 0 0 / 0.12) 66%, transparent 78%)';
 // Tetric product lines — image, learnMoreUrl; optional vimeoId (legacy) or vimeoSections (up to 2 with title/subtitle); optional secondaryPhoto block
 const TETRIC_PRODUCTS = [
 	{
@@ -178,13 +189,142 @@ const TETRIC_PRODUCTS = [
 // Optional: show only certain products per category slug. Key = category slug (from URL or normalized category name). Value = array of product ids. If not set or slug not found, all products are shown.
 const TETRIC_PRODUCTS_BY_CATEGORY = {
 	'posterior-restoration-composite': ['tetric-powerflow', 'tetric-powerfill'],
+	'bulk-fill-composite': [
+		'tetric-powerflow',
+		'tetric-powerfill',
+		'powerfill-powerflow-efficiency',
+		'light-exposure-times',
+	],
+	'bulk-fill': [
+		'tetric-powerflow',
+		'tetric-powerfill',
+		'powerfill-powerflow-efficiency',
+		'light-exposure-times',
+	],
 };
 
+/** Order preserved when filtering TETRIC_PRODUCTS — same slug rules as categorySlugIndicatesAnteriorRestoration */
+const ANTERIOR_RESTORATION_PRODUCT_IDS = ['tetric-prime', 'tetric-evoflow', 'light-exposure-times'];
+
+/** Product images for “Discover the power and buy now” — matches Tetric line section assets (excludes maximized-efficiency combo tile) */
+const BUY_SECTION_PRODUCT_IDS = [
+	'tetric-prime',
+	'tetric-powerflow',
+	'tetric-powerfill',
+	'light-exposure-times',
+];
+
 const DEFAULT_TESTIMONIAL_IDS = ['tiffani', 'manuela', 'luana'];
+const POSTERIOR_RESTORATION_TESTIMONIAL_IDS = ['manuela', 'tiffani', 'luana'];
 const TESTIMONIAL_IDS_BY_CATEGORY = {
 	// Example:
 	// 'posterior-restoration-composite': ['ragazzini'],
+	'light-cure-composite': ['luana', 'manuela', 'tiffani'],
+	'flowable-composite': ['manuela', 'tiffani', 'luana'],
+	'universal-composite': ['manuela', 'tiffani', 'luana'],
+	'chamaleon-composite': ['manuela', 'tiffani', 'luana'],
 };
+
+/** Category slug must contain this substring (API `category.slug`, URL segment, or normalized category key). */
+const ANTERIOR_RESTORATION_SLUG_SNIPPET = 'anterior-restoration';
+
+function categorySlugIndicatesAnteriorRestoration(htmlContent, pageContext, categorySlugKey) {
+	const apiSlug = (htmlContent?.category?.slug ?? '').toString().toLowerCase();
+	const pathSlug =
+		pageContext?.type !== 'home' && pageContext.parts?.length
+			? String(pageContext.parts[pageContext.parts.length - 1]).toLowerCase()
+			: '';
+	const normalizedKey = (categorySlugKey ?? '').toString().toLowerCase();
+	return (
+		apiSlug.includes(ANTERIOR_RESTORATION_SLUG_SNIPPET) ||
+		pathSlug.includes(ANTERIOR_RESTORATION_SLUG_SNIPPET) ||
+		normalizedKey.includes(ANTERIOR_RESTORATION_SLUG_SNIPPET)
+	);
+}
+
+const POSTERIOR_RESTORATION_SLUG_SNIPPET = 'posterior-restoration';
+const LIGHT_CURE_SLUG_SNIPPET = 'light-cure';
+const FLOWABLE_COMPOSITE_SLUG = 'flowable-composite';
+const LUANA_TOP_HERO_SLUGS = new Set(['flowable-composite']);
+const ANTHONY_TOP_HERO_SLUGS = new Set([
+	'low-shrinkage-resin',
+	'low-shrinkage-composite',
+	'bulk-fill-composite',
+	'bulk-fill',
+	'universal-shade-composite',
+	'universal-composite',
+	'chamaleon-composite',
+]);
+
+function categorySlugIndicatesPosteriorRestoration(htmlContent, pageContext, categorySlugKey) {
+	const apiSlug = (htmlContent?.category?.slug ?? '').toString().toLowerCase();
+	const pathSlug =
+		pageContext?.type !== 'home' && pageContext.parts?.length
+			? String(pageContext.parts[pageContext.parts.length - 1]).toLowerCase()
+			: '';
+	const normalizedKey = (categorySlugKey ?? '').toString().toLowerCase();
+	return (
+		apiSlug.includes(POSTERIOR_RESTORATION_SLUG_SNIPPET) ||
+		pathSlug.includes(POSTERIOR_RESTORATION_SLUG_SNIPPET) ||
+		normalizedKey.includes(POSTERIOR_RESTORATION_SLUG_SNIPPET)
+	);
+}
+
+function categorySlugIndicatesLightCure(htmlContent, pageContext, categorySlugKey) {
+	const apiSlug = (htmlContent?.category?.slug ?? '').toString().toLowerCase();
+	const pathSlug =
+		pageContext?.type !== 'home' && pageContext.parts?.length
+			? String(pageContext.parts[pageContext.parts.length - 1]).toLowerCase()
+			: '';
+	const normalizedKey = (categorySlugKey ?? '').toString().toLowerCase();
+	return (
+		apiSlug.includes(LIGHT_CURE_SLUG_SNIPPET) ||
+		pathSlug.includes(LIGHT_CURE_SLUG_SNIPPET) ||
+		normalizedKey.includes(LIGHT_CURE_SLUG_SNIPPET) ||
+		LUANA_TOP_HERO_SLUGS.has(apiSlug) ||
+		LUANA_TOP_HERO_SLUGS.has(pathSlug) ||
+		LUANA_TOP_HERO_SLUGS.has(normalizedKey)
+	);
+}
+
+function categorySlugIsFlowableComposite(htmlContent, pageContext, categorySlugKey) {
+	const apiSlug = (htmlContent?.category?.slug ?? '').toString().toLowerCase();
+	const pathSlug =
+		pageContext?.type !== 'home' && pageContext.parts?.length
+			? String(pageContext.parts[pageContext.parts.length - 1]).toLowerCase()
+			: '';
+	const normalizedKey = (categorySlugKey ?? '').toString().toLowerCase();
+	return (
+		apiSlug === FLOWABLE_COMPOSITE_SLUG ||
+		pathSlug === FLOWABLE_COMPOSITE_SLUG ||
+		normalizedKey === FLOWABLE_COMPOSITE_SLUG
+	);
+}
+
+function categorySlugIndicatesAnthonyTopHero(htmlContent, pageContext, categorySlugKey) {
+	const apiSlug = (htmlContent?.category?.slug ?? '').toString().toLowerCase();
+	const pathSlug =
+		pageContext?.type !== 'home' && pageContext.parts?.length
+			? String(pageContext.parts[pageContext.parts.length - 1]).toLowerCase()
+			: '';
+	const normalizedKey = (categorySlugKey ?? '').toString().toLowerCase();
+	return (
+		categorySlugIndicatesPosteriorRestoration(htmlContent, pageContext, categorySlugKey) ||
+		ANTHONY_TOP_HERO_SLUGS.has(apiSlug) ||
+		ANTHONY_TOP_HERO_SLUGS.has(pathSlug) ||
+		ANTHONY_TOP_HERO_SLUGS.has(normalizedKey)
+	);
+}
+
+function getSuperheroTestimonialIds(htmlContent, pageContext, categorySlugKey) {
+	if (categorySlugIndicatesAnteriorRestoration(htmlContent, pageContext, categorySlugKey)) {
+		return ['luana'];
+	}
+	if (categorySlugIndicatesPosteriorRestoration(htmlContent, pageContext, categorySlugKey)) {
+		return POSTERIOR_RESTORATION_TESTIMONIAL_IDS;
+	}
+	return TESTIMONIAL_IDS_BY_CATEGORY[categorySlugKey] || DEFAULT_TESTIMONIAL_IDS;
+}
 
 const SHOW_DENTIST_TESTIMONIALS = false;
 
@@ -261,10 +401,44 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 	const categorySlug = pageContext.type === 'category' && pageContext.parts?.length
 		? pageContext.parts[0]
 		: (pageContext.category || '').toLowerCase().replace(/\s+/g, '-');
+	const isAnteriorRestorationCategory = categorySlugIndicatesAnteriorRestoration(
+		htmlContent,
+		pageContext,
+		categorySlug
+	);
+	const isPosteriorRestorationCategory = categorySlugIndicatesPosteriorRestoration(
+		htmlContent,
+		pageContext,
+		categorySlug
+	);
+	const isAnthonyTopHeroCategory = categorySlugIndicatesAnthonyTopHero(
+		htmlContent,
+		pageContext,
+		categorySlug
+	);
+	const isLightCureCategory = categorySlugIndicatesLightCure(
+		htmlContent,
+		pageContext,
+		categorySlug
+	);
+	const isFlowableCompositeCategory = categorySlugIsFlowableComposite(
+		htmlContent,
+		pageContext,
+		categorySlug
+	);
+	const flowableEfficiencyBullets = isFlowableCompositeCategory
+		? ['All the different consistency and shade variants of the Tetric Line can be effectively combined']
+		: undefined;
+	const showEfficiencyPillar = !isAnteriorRestorationCategory;
 	const productIdsForCategory = categorySlug && TETRIC_PRODUCTS_BY_CATEGORY[categorySlug];
-	const visibleProducts = Array.isArray(productIdsForCategory)
-		? TETRIC_PRODUCTS.filter(p => productIdsForCategory.includes(p.id))
-		: TETRIC_PRODUCTS;
+	const visibleProducts = isAnteriorRestorationCategory
+		? TETRIC_PRODUCTS.filter((p) => ANTERIOR_RESTORATION_PRODUCT_IDS.includes(p.id))
+		: Array.isArray(productIdsForCategory)
+			? TETRIC_PRODUCTS.filter((p) => productIdsForCategory.includes(p.id))
+			: TETRIC_PRODUCTS;
+	const buySectionThumbnailIds = isAnteriorRestorationCategory
+		? ANTERIOR_RESTORATION_PRODUCT_IDS
+		: BUY_SECTION_PRODUCT_IDS;
 	const safeProductIndex = Math.min(Math.max(0, selectedProductIndex), Math.max(0, visibleProducts.length - 1));
 	const currentProduct = visibleProducts[safeProductIndex];
 
@@ -680,22 +854,71 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
             {/* Hero: full-bleed image with overlaid text and CTA */}
             {(() => {
 				const conv = getConversionContent();
-				const heroBgUrl = HERO_TOP_IMAGE;
+				const heroBgUrl = isAnthonyTopHeroCategory
+					? HERO_TOP_IMAGE_POSTERIOR_RESTORATION
+					: isLightCureCategory
+					? HERO_TOP_IMAGE_LIGHT_CURE
+					: HERO_TOP_IMAGE;
+				const isPosteriorHero = isAnthonyTopHeroCategory || isLightCureCategory;
 				const headlineParts = (conv.heroHeadline || 'Unleash your inner Superhero').split(/(\s+)/);
 				const lastWord = headlineParts[headlineParts.length - 1];
 				const beforeLast = headlineParts.slice(0, -1).join('');
 				const subline = conv.heroDescription || 'with Tetric® Direct Composites.';
+				const heroBgStyle = {
+					backgroundImage: `url(${heroBgUrl})`,
+					backgroundSize: 'cover',
+					backgroundRepeat: 'no-repeat',
+					backgroundPosition: 'center top',
+				};
 				return (
-					<section className="relative min-h-[90vh] flex items-center bg-gray-900">
-						<div
-							className="absolute inset-0 bg-cover bg-top"
-							style={{
-								backgroundImage: `url(${heroBgUrl})`,
-								backgroundSize: 'cover',
-							}}
-						/>
-						<div className="absolute inset-0 bg-black/50" aria-hidden />
-						<div className="relative max-w-6xl mx-auto px-6 py-20 w-full">
+					<section
+						className={
+							isPosteriorHero
+								? 'relative flex min-h-[90vh] items-start bg-black pt-16 pb-20 md:items-center md:pt-0 md:pb-0'
+								: 'relative flex min-h-[90vh] items-center bg-gray-900'
+						}
+					>
+						{isPosteriorHero ? (
+							<>
+								{/* md+: left 50% solid black, right 50% image (cover in half viewport → less vertical crop) */}
+								<div className="absolute inset-0 z-0 hidden md:flex" aria-hidden>
+									<div className="h-full w-1/2 shrink-0 bg-black" />
+									<div className="relative h-full w-1/2 min-w-0 overflow-hidden bg-black">
+										<div className="absolute inset-0 bg-cover bg-top bg-no-repeat" style={heroBgStyle} />
+										{/* Local feather on the photo’s left edge (reinforces blend at 50% column split) */}
+										<div
+											className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-44 bg-gradient-to-r from-black from-15% via-black/65 via-55% to-transparent lg:w-56"
+											aria-hidden
+										/>
+									</div>
+								</div>
+								<div
+									className="pointer-events-none absolute inset-0 z-[5] hidden md:block"
+									style={{ background: HERO_POSTERIOR_SEAM_GRADIENT }}
+									aria-hidden
+								/>
+								<div
+									className="pointer-events-none absolute inset-0 z-[6] hidden md:block bg-gradient-to-r from-transparent via-transparent to-black/25"
+									aria-hidden
+								/>
+								{/* Mobile: full-bleed + top/left weighting (flyer crop); desktop uses split above */}
+								<div className="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat md:hidden" style={heroBgStyle} aria-hidden />
+								<div
+									className="pointer-events-none absolute inset-0 z-[1] md:hidden"
+									style={{
+										background:
+											'linear-gradient(180deg, rgb(0 0 0 / 0.92) 0%, rgb(0 0 0 / 0.45) 42%, rgb(0 0 0 / 0.15) 62%, transparent 82%)',
+									}}
+									aria-hidden
+								/>
+							</>
+						) : (
+							<>
+								<div className="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat" style={heroBgStyle} aria-hidden />
+								<div className="absolute inset-0 z-[2] bg-black/50" aria-hidden />
+							</>
+						)}
+						<div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-20">
 							<div className="max-w-xl">
 								{/* Gradient border with transparent fill; inner area shows hero through bg-black/50 */}
 								<div
@@ -764,13 +987,17 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 				</div>
 			</section>
 
-            {/* Three pillars: Esthetics, Quality, Efficiency — 3-across grid */}
+            {/* Three pillars: Esthetics, Quality, Efficiency — hide Efficiency for anterior-restoration categories */}
             <section className="py-20 px-4 md:px-6 bg-gray-50">
 				<div className="max-w-6xl mx-auto">
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12">
+					<div
+						className={`grid grid-cols-1 gap-10 lg:gap-12 ${
+							showEfficiencyPillar ? 'md:grid-cols-3' : 'md:grid-cols-2'
+						}`}
+					>
 						<EstheticsCard />
 						<QualityCard />
-						<EfficiencyCard />
+						{showEfficiencyPillar && <EfficiencyCard bullets={flowableEfficiencyBullets} />}
 					</div>
 				</div>
 			</section>
@@ -798,11 +1025,11 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
             {/* Testimonial section: three doctor superhero cards, hero colors, grid */}
             {(() => {
 				const conv = getConversionContent();
-				const testimonialIds = TESTIMONIAL_IDS_BY_CATEGORY[categorySlug] || DEFAULT_TESTIMONIAL_IDS;
+				const testimonialIds = getSuperheroTestimonialIds(htmlContent, pageContext, categorySlug);
 				return (
 					<section className="py-20 px-4 md:px-6 bg-gray-950 relative overflow-hidden" aria-label="Doctor testimonials">
 						<div className="absolute inset-0 bg-blue-900/80" aria-hidden />
-						<div className="relative max-w-6xl mx-auto">
+						<div className="relative max-w-7xl mx-auto">
 							<h2 className="text-2xl md:text-3xl lg:text-4xl text-white font-normal text-center mb-4">
 								Superheroes <span className="font-bold">for their patients</span>
 								
@@ -841,10 +1068,10 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 					<div className="grid grid-cols-1 lg:grid-cols-[1fr,1.2fr] gap-12 lg:gap-16 items-center">
 						<div>
 							<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] leading-tight tracking-tight mb-4">
-								The solution for all cavities
+							The solution for all cavities
 							</h2>
 							<p className="text-[#0a478b]/90 text-base md:text-lg leading-relaxed">
-							Four composite materials are all you need for an efficient restorative workflow in all cavity classes.
+							Four composite materials are all you need for an efficient restorative workflow in all cavity classes
 							</p>
 						</div>
 						<div className="flex justify-center lg:justify-end">
@@ -1128,19 +1355,35 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 				<div className="max-w-5xl mx-auto">
 					<div className="grid grid-cols-1 md:grid-cols-[1fr,1.2fr] gap-12 md:gap-16 items-center">
 						{/* Left: product visuals — uses same assets as product line section */}
-						<div className="flex items-center justify-center gap-4 md:gap-6 flex-wrap">
-							{['https://www.ivoclar.com/GLOBAL%20-%20MEDIA/Products/Composite/Tetric%20Line/88855/image-thumb__88855__blog_detail/Tetric-Prime-A3_1920x1220px.76c37b3f.jpg', 'https://www.ivoclar.com/GLOBAL%20-%20MEDIA/Products/Composite/Tetric%20Line/88853/image-thumb__88853__blog_detail/Tetric-PowerFlow_1920x1220px.e7385b30.jpg'].map((src, i) => (
-								<div key={i} className="w-24 h-24 md:w-32 md:h-32 rounded-xl bg-white border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
-									{/* eslint-disable-next-line @next/next/no-img-element */}
-									<img src={src} alt="" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling?.classList.remove('hidden'); }} />
-									<span className="hidden text-[#0a478b] text-xs font-medium text-center px-2">Tetric</span>
-								</div>
-							))}
+						<div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-5 w-full max-w-[17rem] sm:max-w-xs mx-auto md:mx-0 md:justify-self-start">
+							{buySectionThumbnailIds.map((productId) => {
+								const p = TETRIC_PRODUCTS.find((x) => x.id === productId);
+								if (!p?.image) return null;
+								return (
+									<div
+										key={productId}
+										className="aspect-square w-full min-w-0 rounded-xl bg-white border border-gray-200 flex items-center justify-center overflow-hidden"
+										title={p.name}
+									>
+										{/* eslint-disable-next-line @next/next/no-img-element */}
+										<img
+											src={p.image}
+											alt={p.name}
+											className="w-full h-full object-contain p-1"
+											onError={(e) => {
+												e.target.style.display = 'none';
+												e.target.nextElementSibling?.classList.remove('hidden');
+											}}
+										/>
+										<span className="hidden text-[#0a478b] text-[10px] font-medium text-center px-1 leading-tight">{p.name}</span>
+									</div>
+								);
+							})}
 						</div>
 						{/* Right: heading + single CTA (shop only) */}
 						<div>
 							<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] leading-tight tracking-tight mb-4">
-								Buy now in our Online Shop with your Ivoclar webshop account
+							Discover the power and buy now
 							</h2>
 							<a
 								href={CREATOR.shopUrl}

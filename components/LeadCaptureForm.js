@@ -129,13 +129,10 @@ export default function LeadCaptureForm({ pathname = '', pageContext = {} }) {
   return (
     <section id="contact" className="py-16 px-4 md:px-6 bg-white border-t border-gray-200">
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-8 tracking-tight">Book your demo</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-8 tracking-tight">Discover the power in person</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <p className="text-sm text-gray-700">
-            Please be informed about our{' '}
-            <a href="https://www.ivoclar.com/privacy" target="_blank" rel="noopener noreferrer" className="text-[#0a478b] hover:underline">
-              Privacy Policy
-            </a>.
+          Request a in-office demo and see the Tetric line in action
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
