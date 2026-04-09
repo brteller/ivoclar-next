@@ -1095,9 +1095,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 					<p className="text-sm text-gray-600 mb-2 max-w-3xl">
 						Select a product below to view details and specifications — tap or click to switch.
 					</p>
-					<p id="tetric-product-picker-label" className="text-xs font-semibold text-[#0a478b] uppercase tracking-wide mb-3">
-						Choose a product
-					</p>
+					
 					<div className="mb-10 w-full">
 						<nav
 							className="flex flex-wrap gap-3 sm:gap-4 justify-start"
@@ -1118,7 +1116,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 										onClick={() => setSelectedProductIndex(i)}
 										className={`
 											min-h-[3rem] min-w-[10.5rem] max-w-full sm:min-w-[11.5rem]
-											rounded-md px-5 py-3.5 text-sm sm:text-base font-semibold text-center leading-snug
+											rounded-full px-5 py-3.5 text-sm sm:text-base text-center leading-snug
 											transition-all duration-150
 											border-2
 											focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0a478b] focus-visible:ring-offset-2
@@ -1417,6 +1415,22 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 				</div>
 			</section>
             )}
+
+			{/* Footnotes */}
+			<section className="py-10 px-4 md:px-6 bg-white border-t border-gray-200">
+				<div className="max-w-6xl mx-auto">
+					<div className="text-xs md:text-sm text-gray-600 leading-relaxed space-y-1">
+						<p>* Cavity classes I-V according to G. V. Black</p>
+						<p>[1] Based on worldwide sales figures for the Tetric product line</p>
+						<p>[2] According to ISO 4049</p>
+						<p>[3] Only suitable for Class I &amp; II restorations in posterior teeth light-cured from the occlusal aspect</p>
+						<p>[4] Ganster B et al., Macromolecular Rapid Commun. 2008, 29, p. 57-62.</p>
+						<p>[5] Ganster B et al., Macromolecules 2008, 41, p. 2394-2400.</p>
+						<p>[6] In the posterior region</p>
+						<p>[7] Hirata R, Operative Dentistry 2018, 43-2, p. 144-150, additional data on file.</p>
+					</div>
+				</div>
+			</section>
 
 			{/* Ivoclar-style Footer */}
 			<footer className="bg-[#0a478b] text-white">
