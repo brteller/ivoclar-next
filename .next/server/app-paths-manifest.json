@@ -1,4 +1,10 @@
 {
+  "/api/contact/route": "app/api/contact/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/[slug1]/[slug2]/[slug3]/[slug4]/page": "app/[slug1]/[slug2]/[slug3]/[slug4]/page.js",
+  "/[slug1]/[slug2]/[slug3]/page": "app/[slug1]/[slug2]/[slug3]/page.js",
+  "/[slug1]/[slug2]/page": "app/[slug1]/[slug2]/page.js",
+  "/[slug1]/page": "app/[slug1]/page.js",
   "/page": "app/page.js",
-  "/[slug1]/[slug2]/page": "app/[slug1]/[slug2]/page.js"
+  "/thank-you/page": "app/thank-you/page.js"
 }

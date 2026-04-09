@@ -2,33 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+/* Ivoclar Uniform Pro — files in /public/fonts (UniformPro-*.woff2|woff) */
+@font-face {
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-Lgt.woff2') format('woff2'),
+    url('/fonts/UniformPro-Lgt.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
 
 @font-face {
-  font-family: 'Uniformpro';
-  src: url('/fonts/Uniformpro.woff2') format('woff2'),
-       url('/fonts/Uniformpro.woff') format('woff');
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-LgtIt.woff2') format('woff2'),
+    url('/fonts/UniformPro-LgtIt.woff') format('woff');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-Reg.woff2') format('woff2'),
+    url('/fonts/UniformPro-Reg.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
-.font-playfair {
-  font-family: "Playfair Display", serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-}
-
-.font-playfair-regular {
+@font-face {
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-RegIt.woff2') format('woff2'),
+    url('/fonts/UniformPro-RegIt.woff') format('woff');
   font-weight: 400;
+  font-style: italic;
+  font-display: swap;
 }
 
-.font-playfair-medium {
+@font-face {
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-Med.woff2') format('woff2'),
+    url('/fonts/UniformPro-Med.woff') format('woff');
   font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
 
-.font-playfair-bold {
+@font-face {
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-MedIt.woff2') format('woff2'),
+    url('/fonts/UniformPro-MedIt.woff') format('woff');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-Bld.woff2') format('woff2'),
+    url('/fonts/UniformPro-Bld.woff') format('woff');
   font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-BldIt.woff2') format('woff2'),
+    url('/fonts/UniformPro-BldIt.woff') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-Blk.woff2') format('woff2'),
+    url('/fonts/UniformPro-Blk.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Uniform Pro';
+  src: url('/fonts/UniformPro-BlkIt.woff2') format('woff2'),
+    url('/fonts/UniformPro-BlkIt.woff') format('woff');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
 }
 
 html {
@@ -37,11 +99,6 @@ html {
 
 body {
   margin: 0;
-  font-family: 'Uniformpro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   overflow-y: auto;
 }
