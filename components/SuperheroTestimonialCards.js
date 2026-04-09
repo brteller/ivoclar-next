@@ -22,7 +22,7 @@ const TESTIMONIALS = [
   {
     id: 'manuela',
     name: 'Dr. Anthony Mennito',
-    affiliation: 'Dental Clinic Porec, Croatia',
+    affiliation: 'The MOD Institute',
     quote:
       "I'm saving the day for my patients by doing great dentistry with Tetric Line. From a flowable that cures really efficiently on the floor of a deep box to dentin shade composite that helps me nail my class IV's, every detail is well thought out. And it's those details that can make all the difference.",
     image: '/images/superhero/mennito.jpg',
