@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { fetchPageData } from '@/lib/api';
-import { getSEOMetadataFromParams } from '@/lib/creator';
+import { getRouteMetadataFromParams } from '@/lib/creator';
 import PageRenderer from '@/components/PageRenderer';
 
 function getOrigin(headersList) {
@@ -20,14 +20,7 @@ export async function generateMetadata({ params }) {
   } catch (e) {
     console.error(e);
   }
-  const meta = getSEOMetadataFromParams(paramsNorm, data, origin);
-  return {
-    title: meta.title,
-    description: meta.description,
-    openGraph: { title: meta.title, description: meta.description, url: meta.canonical },
-    twitter: { title: meta.title, description: meta.description },
-    alternates: meta.canonical ? { canonical: meta.canonical } : undefined,
-  };
+  return getRouteMetadataFromParams(paramsNorm, data, origin);
 }
 
 export default async function StateCategoryPage({ params }) {

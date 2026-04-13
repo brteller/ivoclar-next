@@ -696,6 +696,9 @@ video {
 .h-full {
   height: 100%;
 }
+.max-h-\[calc\(100dvh-2rem\)\] {
+  max-height: calc(100dvh - 2rem);
+}
 .min-h-0 {
   min-height: 0px;
 }
@@ -952,6 +955,12 @@ video {
 }
 .overflow-x-auto {
   overflow-x: auto;
+}
+.overflow-y-auto {
+  overflow-y: auto;
+}
+.overscroll-contain {
+  overscroll-behavior: contain;
 }
 .truncate {
   overflow: hidden;
@@ -1284,6 +1293,10 @@ video {
 .py-6 {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 .pb-20 {
   padding-bottom: 5rem;
@@ -1820,6 +1833,10 @@ body {
     flex-direction: row;
   }
 
+  .sm\:items-center {
+    align-items: center;
+  }
+
   .sm\:gap-16 {
     gap: 4rem;
   }
@@ -1836,6 +1853,10 @@ body {
     padding: 2rem;
   }
 
+  .sm\:p-6 {
+    padding: 1.5rem;
+  }
+
   .sm\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -1849,6 +1870,16 @@ body {
   .sm\:py-4 {
     padding-top: 1rem;
     padding-bottom: 1rem;
+  }
+
+  .sm\:px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .sm\:py-6 {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
   }
 
   .sm\:pt-8 {

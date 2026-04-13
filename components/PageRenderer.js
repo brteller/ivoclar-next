@@ -446,6 +446,11 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 	const currentProduct = visibleProducts[safeProductIndex];
 	const SHOP_DESTINATIONS = [
 		{
+			id: 'tetric-prime',
+			label: 'Tetric Prime',
+			url: 'https://shop.ivoclarusa.com/shop/brands/tetric-prime/',
+		},
+		{
 			id: 'tetric-powerfill',
 			label: 'Tetric PowerFill',
 			url: 'https://order.ivoclarusa.com/shop/composites/tetric-powerfill/',
@@ -454,6 +459,11 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 			id: 'tetric-powerflow',
 			label: 'Tetric PowerFlow',
 			url: 'https://order.ivoclarusa.com/shop/composites/tetric-powerflow/',
+		},
+		{
+			id: 'tetric-evoflow',
+			label: 'Tetric EvoFlow',
+			url: 'https://shop.ivoclarusa.com/shop/brands/tetric-evoflow/',
 		},
 	];
 	const productImageById = Object.fromEntries(TETRIC_PRODUCTS.map((p) => [p.id, p.image]));
@@ -1481,13 +1491,13 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 			</section>
 
 			{isShopModalOpen && (
-				<div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
+				<div className="fixed inset-0 z-[70] flex items-start sm:items-center justify-center overflow-y-auto px-3 py-4 sm:px-4 sm:py-6">
 					<div
 						className="absolute inset-0 bg-black/60"
 						onClick={() => setIsShopModalOpen(false)}
 						aria-hidden
 					/>
-					<div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+					<div className="relative w-full max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain">
 						<h3 className="text-xl font-bold text-[#0a478b] mb-2">Choose product to buy</h3>
 						<p className="text-sm text-gray-600 mb-5">
 							Select the product shop page you want to open.
