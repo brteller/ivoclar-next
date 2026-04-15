@@ -43,9 +43,9 @@ const TETRIC_PRODUCTS = [
 		faqQuestion: 'How does natural shade blend work?',
 		faqAnswer: 'As a result of the special monomer and filler blend of our universal composites, the materials are capable of adapting their light-optical properties to those of the surrounding tooth structure.',
 		specs: [
-			{ label: 'Type', value: 'Flowable composite' },
-			{ label: 'Region', value: 'Anterior & posterior' },
-			{ label: 'Shades', value: 'A3 and more' }
+			{ label: 'Type', value: 'Universal sculptable composite' },
+			{ label: 'Indications', value: 'Anterior and posterior' },
+			{ label: 'Shades', value: 'Available in multiple shades' }
 		],
 		image: 'https://www.ivoclar.com/GLOBAL%20-%20MEDIA/Products/Composite/Tetric%20Line/88855/image-thumb__88855__blog_detail/Tetric-Prime-A3_1920x1220px.76c37b3f.jpg',
 		learnMoreUrl: '#',
@@ -74,9 +74,9 @@ const TETRIC_PRODUCTS = [
 		faqQuestion: 'Tetric EvoFlow has a thixotropic consistency',
 		faqAnswer: 'It is flowable under pressure, yet it remains stable when handled. It therefore enables you to work with high precision. This characteristic allows the product to adapt closely to narrow and thinly tapering areas. The product remains in place where it has been applied.',
 		specs: [
-			{ label: 'Type', value: 'Flowable composite' },
-			{ label: 'Region', value: 'Anterior & posterior' },
-			{ label: 'Shades', value: 'A3 and more' }
+			{ label: 'Type', value: 'Flowable light-curing composite' },
+			{ label: 'Indications', value: 'Anterior & posterior' },
+			{ label: 'Shades', value: 'Available in multiple shades' }
 		],
 		image: 'https://www.ivoclar.com/GLOBAL%20-%20MEDIA/Products/Composite/Tetric%20Line/88849/image-thumb__88849__blog_detail/Tetric-EvoFlow_1920x1220px.a60c890b.jpg',
 		learnMoreUrl: '#',
@@ -100,9 +100,9 @@ const TETRIC_PRODUCTS = [
 		faqQuestion: 'Patented light initiator Ivocerin[4, 5] and Aessencio Technology',
 		faqAnswer: 'Ivocerin ensures a reliable depth of cure of composite layers of up to 4 mm. The Aessencio Technology is responsible for gradually increasing the opacity of the initially translucent 4-mm composites during the light polymerization process. Ultimately, the materials attain the translucency levels of enamel and dentin and therefore assume a true-to-nature esthetic appearance.',
 		specs: [
-			{ label: 'Increment', value: '≤ 4 mm' },
-			{ label: 'Region', value: 'Posterior (Class I & II)' },
-			{ label: 'Technology', value: '3s PowerCure' }
+			{ label: 'Increment', value: 'Up to 4 mm' },
+			{ label: 'Region', value: 'Anterior and posterior, including use as a base or liner' },
+			{ label: 'Technology', value: '3s PowerCure compatible' }
 		],
 		image: 'https://www.ivoclar.com/GLOBAL%20-%20MEDIA/Products/Composite/Tetric%20Line/88853/image-thumb__88853__blog_detail/Tetric-PowerFlow_1920x1220px.e7385b30.jpg',
 		learnMoreUrl: '#',
@@ -127,9 +127,9 @@ const TETRIC_PRODUCTS = [
 		faqQuestion: 'Patented light initiator Ivocerin[4, 5] and Aessencio Technology',
 		faqAnswer: 'Ivocerin ensures a reliable depth of cure of composite layers of up to 4 mm. The Aessencio Technology is responsible for gradually increasing the opacity of the initially translucent 4-mm composites during the light polymerization process. Ultimately, the materials attain the translucency levels of enamel and dentin and therefore assume a true-to-nature esthetic appearance.',
 		specs: [
-			{ label: 'Increment', value: '≤ 4 mm' },
-			{ label: 'Region', value: 'Posterior (Class I & II)' },
-			{ label: 'Technology', value: '3s PowerCure' }
+			{ label: 'Increment', value: 'Up to 4 mm' },
+			{ label: 'Region', value: 'Posterior restorations (Class I and II)' },
+			{ label: 'Technology', value: '3s PowerCure compatible' }
 		],
 		image: 'https://www.ivoclar.com/GLOBAL%20-%20MEDIA/Products/Composite/Tetric%20Line/88851/image-thumb__88851__blog_detail/Tetric-PowerFill-ivA_1920x1220px.04996eab.jpg',
 		learnMoreUrl: '#',
