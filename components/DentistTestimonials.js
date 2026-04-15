@@ -24,7 +24,7 @@ export default function DentistTestimonials() {
     <section className="py-24 px-4 md:px-6 bg-white" aria-label="Testimonials from dentists">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-16 tracking-tight text-center">
-          What dentists say about Tetric
+          What dentists say about Tetric®
         </h2>
         <div className="space-y-24 md:space-y-28">
           {DENTIST_TESTIMONIALS.map((testimonial, index) => (

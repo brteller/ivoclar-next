@@ -43,9 +43,9 @@ const TETRIC_PRODUCTS = [
 		faqQuestion: 'How does natural shade blend work?',
 		faqAnswer: 'As a result of the special monomer and filler blend of our universal composites, the materials are capable of adapting their light-optical properties to those of the surrounding tooth structure.',
 		specs: [
-			{ label: 'Type', value: 'Universal composite' },
+			{ label: 'Type', value: 'Flowable composite' },
 			{ label: 'Region', value: 'Anterior & posterior' },
-			{ label: 'Shades', value: 'A2, A2 Dentin, A3' }
+			{ label: 'Shades', value: 'A3 and more' }
 		],
 		image: 'https://www.ivoclar.com/GLOBAL%20-%20MEDIA/Products/Composite/Tetric%20Line/88855/image-thumb__88855__blog_detail/Tetric-Prime-A3_1920x1220px.76c37b3f.jpg',
 		learnMoreUrl: '#',
@@ -666,7 +666,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 		};
 
 		const { locationStr } = getLocationString(pageContext);
-		const category = pageContext.category || 'Tetric';
+		const category = pageContext.category || CREATOR.name;
 
 		const title = locationStr 
 			? `${category} in ${locationStr} | ${CREATOR.name}`
@@ -743,7 +743,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 		const heroHeadline = c?.hero_headline || (locationStr ? `${category} in ${shortLocation}` : category);
 		const heroDescription = c?.hero_subheadline || c?.hero_description || (locationStr ? `${category} in ${locationStr}. ${CREATOR.description}` : CREATOR.description);
 		const heroImageUrl = c?.hero_image_url || (Array.isArray(c?.product_images) && c.product_images[0]) || null;
-		const benefitsHeadline = c?.benefits_headline || 'Why Tetric';
+		const benefitsHeadline = c?.benefits_headline || 'Why Tetric®';
 		const videoUrl = c?.video_url || null;
 		const infographicUrl = c?.infographic_url || c?.secondary_image_url || null;
 		const ctaText = c?.cta_text || 'Try it Today';
@@ -990,11 +990,11 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 										<h1 className="text-white text-base sm:text-lg md:text-5xl mt-2 sm:mt-3 font-light leading-snug md:leading-tight">
 											{htmlContent?.category?.name ? (
 												<>
-													With Tetric {htmlContent.category.name}.
+													With Tetric® {htmlContent.category.name}.
 												</>
 											) : (
 												<>
-													With Tetric<br></br> Direct Composites.
+													With Tetric®<br></br> Direct Composites.
 												</>
 											)}
 										</h1>
@@ -1093,7 +1093,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 							<p className="text-white/90 text-lg md:text-xl text-center mb-12 max-w-2xl mx-auto">
 							The Tetric Line enabled them to be superheroes--delivering quality and high esthetic outcomes every day.
 							</p>
-							<SuperheroTestimonialCards testimonialIds={testimonialIds} />ƒ
+							<SuperheroTestimonialCards testimonialIds={testimonialIds} />
 							{/* CTA row — match hero: white primary button, underlined Shop now */}
 							<div className="flex flex-wrap items-center justify-center gap-6 mt-12">
 								<button
@@ -1134,7 +1134,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 						<div className="flex justify-center lg:justify-end">
 							{/* eslint-disable-next-line @next/next/no-img-element */}
 							<img
-								src="/images/tetric-cavity-solution.png"
+								src="/images/high-res-cavity.jpg"
 								alt="Tetric Line — Class I & II, Class III & IV, Class V restorative solutions"
 								className="w-full max-w-xl lg:max-w-2xl object-contain"
 							/>
@@ -1147,7 +1147,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
             <section className="py-20 px-4 md:px-6 bg-gray-50">
 				<div className="max-w-6xl mx-auto">
 					<h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-3 tracking-tight">
-						{pageContext?.category ? `Tetric Line for ${pageContext.category}` : 'Tetric Line'}
+						{pageContext?.category ? `Tetric® Line for ${pageContext.category}` : 'Tetric® Line'}
 					</h2>
 					<p className="text-sm text-gray-600 mb-2 max-w-3xl">
 						Select a product below to view details and specifications — tap or click to switch.

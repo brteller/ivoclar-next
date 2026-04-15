@@ -4,11 +4,11 @@ import { CREATOR } from '@/lib/creator';
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
   title: {
-    default: 'Tetric | Ivoclar Dental Composites & Restorative Materials',
+    default: CREATOR.title,
     template: '%s'
   },
-  description: "Tetric by Ivoclar — premium dental composite resins and restorative materials for durable, aesthetic restorations. Trusted by dental professionals worldwide.",
-  applicationName: 'Tetric by Ivoclar',
+  description: CREATOR.description,
+  applicationName: CREATOR.siteName,
   referrer: 'origin-when-cross-origin',
   creator: CREATOR.name,
   publisher: CREATOR.siteName,
@@ -35,7 +35,7 @@ export const metadata = {
   },
   openGraph: {
     type: 'website',
-    siteName: 'Tetric by Ivoclar'
+    siteName: CREATOR.siteName
   },
   twitter: {
     card: 'summary_large_image'
