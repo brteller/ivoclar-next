@@ -1,12 +1,13 @@
 'use client';
 
 import PillarCheckIcon from './PillarCheckIcon';
+import { renderWithCitations } from '@/lib/citations';
 
 const QUALITY_BULLETS = [
-  'More than 730 million restorations placed throughout the world',
+  'More than 730 million restorations[1] placed throughout the world',
   'Based on Tetric EvoCeram, which has enjoyed more than 15 years of clinical success',
   'Easy handling',
-  'Minimal susceptibility to fracture due to high flexural strength',
+  'Minimal susceptibility to fracture due to high flexural strength[2]',
   'Due to their high radiopacity, the materials are clearly visible on X-rays',
 ];
 
@@ -19,7 +20,7 @@ export default function QualityCard() {
         {QUALITY_BULLETS.map((bullet) => (
           <li key={bullet} className="flex gap-2">
             <span className="text-[#00a651] mt-1.5 shrink-0">•</span>
-            <span>{bullet}</span>
+            <span>{renderWithCitations(bullet, 'quality')}</span>
           </li>
         ))}
       </ul>

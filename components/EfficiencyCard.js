@@ -1,11 +1,12 @@
 'use client';
 
 import PillarCheckIcon from './PillarCheckIcon';
+import { renderWithCitations } from '@/lib/citations';
 
 const EFFICIENCY_BULLETS = [
   'All the different consistency and shade variants of the Tetric Line can be effectively combined',
   'Short light exposure times',
-  'Time savings of up to 51% with the 4-mm composites when the 3s PowerCure product portfolio is used',
+  'Time savings of up to 51% with the 4-mm composites when the 3s PowerCure product portfolio is used[3]',
 ];
 
 export default function EfficiencyCard({ bullets = EFFICIENCY_BULLETS }) {
@@ -17,7 +18,7 @@ export default function EfficiencyCard({ bullets = EFFICIENCY_BULLETS }) {
         {bullets.map((bullet) => (
           <li key={bullet} className="flex gap-2">
             <span className="text-[#00a651] mt-1.5 shrink-0">•</span>
-            <span>{bullet}</span>
+            <span>{renderWithCitations(bullet, 'efficiency')}</span>
           </li>
         ))}
       </ul>

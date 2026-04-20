@@ -8,6 +8,7 @@ import QualityCard from '@/components/QualityCard';
 import EfficiencyCard from '@/components/EfficiencyCard';
 import SuperheroTestimonialCards from '@/components/SuperheroTestimonialCards';
 import LeadCaptureForm from '@/components/LeadCaptureForm';
+import { renderWithCitations, TETRIC_FOOTNOTES } from '@/lib/citations';
 
 /** Default top hero background (first section). */
 const HERO_TOP_IMAGE = '/images/top-hero.png';
@@ -89,7 +90,7 @@ const TETRIC_PRODUCTS = [
 		description: 'The material is characterized by low shrinkage, optimum flexural strength and reliable depth of cure. This makes the clinical performance of Tetric PowerFlow just as impressive as that of conventional composites. As a result of its great adaptation to cavity walls, the product is suitable for the efficient treatment of deep cavities. We recommend using Tetric PowerFlow in combination with Tetric PowerFill. It can also be used in conjunction with Tetric Prime.',
 		featuresSubhead: 'Esthetics – Quality – Efficiency',
 		features: [
-			'True-to-nature esthetics for posterior restorations due to Ivocerin and Aessencio Technology',
+			'True-to-nature esthetics for posterior restorations due to Ivocerin[4, 5] and Aessencio Technology',
 			'Reliable curing of increments of up to 4 mm in thickness',
 			'Low susceptibility to process-related air entrapment',
 			'Great adaptation to cavity walls and fast volume replacement because of outstanding flow properties',
@@ -732,7 +733,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 		const c = htmlContent?.content || htmlContent;
 		const defaultBenefits = [
 			'Easy handling for efficient restorations',
-			'Excellent shade matching and aesthetics',
+			'Excellent shade matching and esthetics',
 			'Low shrinkage for reliable results',
 			'Trusted by dental professionals worldwide'
 		];
@@ -1038,7 +1039,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 						</p>
 					</div>
 					<p className="text-[#0a478b] text-base md:text-lg leading-relaxed">
-					To date, more than 730 million restorations have been placed with Tetric throughout the world. You can rely on our tried-and-tested restorative materials that stand out for their exceptional esthetics, proven quality, and high level of efficiency.
+					{renderWithCitations('To date, more than 730 million restorations have been placed with Tetric throughout the world[1]. You can rely on our tried-and-tested restorative materials that stand out for their exceptional esthetics, proven quality, and high level of efficiency.', 'intro')}
 					</p>
 				</div>
 			</section>
@@ -1233,13 +1234,13 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 									</div>
 								</div>
 								{/* Description full-width below */}
-								<p className="text-[#0a478b]/90 text-base leading-relaxed mb-6">{p.description}</p>
+								<p className="text-[#0a478b]/90 text-base leading-relaxed mb-6">{renderWithCitations(p.description, `prod-${p.id}-desc`)}</p>
 								{p.contentSections && p.contentSections.length > 0 && (
 											<div className="space-y-5 mb-6">
 												{p.contentSections.map((sec, i) => (
 													<div key={i}>
-														<p className="font-semibold text-[#0a478b] text-sm mb-1">{sec.heading}</p>
-														<p className="text-gray-700 text-sm leading-relaxed">{sec.body}</p>
+														<p className="font-semibold text-[#0a478b] text-sm mb-1">{renderWithCitations(sec.heading, `prod-${p.id}-sec-${i}-h`)}</p>
+														<p className="text-gray-700 text-sm leading-relaxed">{renderWithCitations(sec.body, `prod-${p.id}-sec-${i}-b`)}</p>
 													</div>
 												))}
 											</div>
@@ -1258,7 +1259,7 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 														{p.exposureTable.rows.map((row, ri) => (
 															<tr key={ri} className={ri % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
 																{row.map((cell, ci) => (
-																	<td key={ci} className="px-4 py-3 border-t border-gray-200 text-gray-800">{cell}</td>
+																	<td key={ci} className="px-4 py-3 border-t border-gray-200 text-gray-800">{renderWithCitations(cell, `prod-${p.id}-cell-${ri}-${ci}`)}</td>
 																))}
 															</tr>
 														))}
@@ -1277,15 +1278,15 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 												{p.features.map((f, i) => (
 													<li key={i} className="flex gap-2 text-gray-700 text-sm leading-relaxed">
 														<span className="text-[#00a651] shrink-0">•</span>
-														<span>{f}</span>
+														<span>{renderWithCitations(f, `prod-${p.id}-feat-${i}`)}</span>
 													</li>
 												))}
 											</ul>
 										)}
 										{p.faqQuestion && p.faqAnswer && (
 											<div className="mb-6">
-												<p className="font-semibold text-[#0a478b] text-sm mb-1">{p.faqQuestion}</p>
-												<p className="text-gray-700 text-sm leading-relaxed">{p.faqAnswer}</p>
+												<p className="font-semibold text-[#0a478b] text-sm mb-1">{renderWithCitations(p.faqQuestion, `prod-${p.id}-faq-q`)}</p>
+												<p className="text-gray-700 text-sm leading-relaxed">{renderWithCitations(p.faqAnswer, `prod-${p.id}-faq-a`)}</p>
 											</div>
 										)}
 										{p.specs && p.specs.length > 0 && (
@@ -1474,19 +1475,43 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 			</section>
             )}
 
-			{/* Footnotes */}
-			<section className="py-10 px-4 md:px-6 bg-white border-t border-gray-200">
+			{/* References / Footnotes — semantic <ol> using DPUB-ARIA doc-endnotes.
+			    Each inline [N] marker in body text renders as a <sup role="doc-noteref">
+			    anchor pointing to the matching <li id="fn-N" role="doc-endnote"> below.
+			    Academic works are wrapped in <cite> per HTML spec. */}
+			<section
+				id="references"
+				aria-labelledby="references-heading"
+				className="py-10 px-4 md:px-6 bg-white border-t border-gray-200"
+			>
 				<div className="max-w-6xl mx-auto">
-					<div className="text-xs md:text-sm text-gray-600 leading-relaxed space-y-1">
-						<p>* Cavity classes I-V according to G. V. Black</p>
-						<p>[1] Based on worldwide sales figures for the Tetric product line</p>
-						<p>[2] According to ISO 4049</p>
-						<p>[3] Only suitable for Class I &amp; II restorations in posterior teeth light-cured from the occlusal aspect</p>
-						<p>[4] Ganster B et al., Macromolecular Rapid Commun. 2008, 29, p. 57-62.</p>
-						<p>[5] Ganster B et al., Macromolecules 2008, 41, p. 2394-2400.</p>
-						<p>[6] In the posterior region</p>
-						<p>[7] Hirata R, Operative Dentistry 2018, 43-2, p. 144-150, additional data on file.</p>
-					</div>
+					<h2 id="references-heading" className="sr-only">References</h2>
+					<p className="text-xs md:text-sm text-gray-600 leading-relaxed mb-2">
+						* Cavity classes I-V according to G. V. Black
+					</p>
+					<ol
+						role="doc-endnotes"
+						className="text-xs md:text-sm text-gray-600 leading-relaxed space-y-1 list-none pl-0"
+					>
+						{TETRIC_FOOTNOTES.map((fn) => (
+							<li
+								key={fn.id}
+								id={`fn-${fn.id}`}
+								role="doc-endnote"
+								className="flex gap-2"
+							>
+								<span className="font-medium text-gray-700 shrink-0" aria-hidden>[{fn.id}]</span>
+								<span>
+									{fn.work ? (
+										<>
+											<cite className="not-italic">{fn.work}</cite>{' '}
+										</>
+									) : null}
+									{fn.text}
+								</span>
+							</li>
+						))}
+					</ol>
 				</div>
 			</section>
 
