@@ -45,20 +45,6 @@ export default function ThankYouPage() {
               </li>
             </ul>
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-8 py-6 border-y border-gray-200">
-            <div>
-              <div className="text-3xl font-bold text-blue-600 mb-1">72h</div>
-              <div className="text-xs text-gray-600">Avg deployment</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-blue-600 mb-1">10K+</div>
-              <div className="text-xs text-gray-600">Pages at scale</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-blue-600 mb-1">5M+</div>
-              <div className="text-xs text-gray-600">Impressions driven</div>
-            </div>
-          </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/"
