@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Script from 'next/script';
 
 const JOB_TITLE_OPTIONS = [
   { value: '01', label: 'Dentist' },
@@ -32,7 +33,8 @@ const PRODUCT_OPTIONS = [
   { value: 'Tetric EvoFlow', label: 'Tetric EvoFlow' },
 ];
 
-const PARDOT_FORM_ACTION = 'https://campaign.ivoclar.com/l/794073/2025-04-07/489ns7';
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+const RECAPTCHA_ACTION = 'lead_capture';
 
 export default function LeadCaptureForm() {
   const [formData, setFormData] = useState({
@@ -57,6 +59,8 @@ export default function LeadCaptureForm() {
     utm_id: '',
     utm_content: '',
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleFormChange = (e) => {
     const { name, value, type, checked, multiple, options } = e.target;
@@ -78,11 +82,66 @@ export default function LeadCaptureForm() {
     }));
   }, []);
 
+  const getRecaptchaToken = () =>
+    new Promise((resolve, reject) => {
+      if (!RECAPTCHA_SITE_KEY) {
+        reject(new Error('reCAPTCHA site key is not configured'));
+        return;
+      }
+      if (typeof window === 'undefined' || !window.grecaptcha || !window.grecaptcha.ready) {
+        reject(new Error('reCAPTCHA failed to load. Please refresh and try again.'));
+        return;
+      }
+      window.grecaptcha.ready(async () => {
+        try {
+          const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
+            action: RECAPTCHA_ACTION,
+          });
+          resolve(token);
+        } catch (err) {
+          reject(err);
+        }
+      });
+    });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+    setErrorMessage(null);
+    setSubmitting(true);
+    try {
+      const recaptchaToken = await getRecaptchaToken();
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, recaptchaToken }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        if (data?.error === 'captcha-failed') {
+          throw new Error("We couldn't verify that you're not a bot. Please refresh and try again.");
+        }
+        throw new Error('There was a problem submitting your request. Please try again.');
+      }
+      window.location.href = '/thank-you';
+    } catch (err) {
+      console.error('Form submission error:', err);
+      setErrorMessage(err.message || 'There was a problem submitting your request.');
+      setSubmitting(false);
+    }
+  };
+
   return (
     <section id="contact" className="py-16 px-4 md:px-6 bg-white border-t border-gray-200">
+      {RECAPTCHA_SITE_KEY && (
+        <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`}
+          strategy="afterInteractive"
+        />
+      )}
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0a478b] mb-8 tracking-tight">Discover the power in person</h2>
-        <form action={PARDOT_FORM_ACTION} method="post" className="space-y-5">
+        <form onSubmit={handleSubmit} noValidate className="space-y-5">
           <input type="hidden" name="utm_source" value={formData.utm_source} />
           <input type="hidden" name="utm_medium" value={formData.utm_medium} />
           <input type="hidden" name="utm_campaign" value={formData.utm_campaign} />
@@ -151,11 +210,33 @@ export default function LeadCaptureForm() {
             </label>
           </div>
 
+          {errorMessage && (
+            <p className="text-sm text-red-600" role="alert">
+              {errorMessage}
+            </p>
+          )}
+
           <div className="flex justify-end pt-4">
-            <button type="submit" className="bg-[#0a478b] hover:bg-[#083a70] text-white font-bold px-8 py-4 rounded-lg transition-colors">
-              Try it Today
+            <button
+              type="submit"
+              disabled={submitting}
+              className="bg-[#0a478b] hover:bg-[#083a70] disabled:bg-[#0a478b]/60 disabled:cursor-not-allowed text-white font-bold px-8 py-4 rounded-lg transition-colors"
+            >
+              {submitting ? 'Submitting...' : 'Try it Today'}
             </button>
           </div>
+
+          <p className="text-xs text-gray-500 pt-2">
+            This site is protected by reCAPTCHA and the Google{' '}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700">
+              Privacy Policy
+            </a>{' '}
+            and{' '}
+            <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700">
+              Terms of Service
+            </a>{' '}
+            apply.
+          </p>
         </form>
       </div>
     </section>
