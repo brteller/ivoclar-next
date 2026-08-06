@@ -7,7 +7,7 @@ import EstheticsCard from '@/components/EstheticsCard';
 import QualityCard from '@/components/QualityCard';
 import EfficiencyCard from '@/components/EfficiencyCard';
 import SuperheroTestimonialCards from '@/components/SuperheroTestimonialCards';
-import LeadCaptureForm from '@/components/LeadCaptureForm';
+import FreeSampleSection from '@/components/FreeSampleSection';
 import { renderWithCitations, TETRIC_FOOTNOTES } from '@/lib/citations';
 
 /** Default top hero background (first section). */
@@ -1403,8 +1403,10 @@ const PageRenderer = ({ htmlContent, pathname = '', origin = '' }) => {
 				return null;
 			})()}
 
-            {/* Conversion: Book a practice demo */}
-            <LeadCaptureForm pathname={pathname} pageContext={pageContext} />
+            {/* Single conversion CTA (July 23 call): demo form removed per Eric —
+                the free-sample section carries id="contact" so all "Try it Today"
+                buttons scroll here. */}
+            <FreeSampleSection categoryName={pageContext?.category || null} />
 
             {/* Online Shop / Marketplace — primary: contact, secondary: shop now */}
             <section className="py-16 px-4 md:px-6 bg-gray-50 border-t border-gray-200">

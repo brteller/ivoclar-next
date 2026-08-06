@@ -2,6 +2,12 @@ const CONTACT_WEBHOOK = process.env.CONTACT_WEBHOOK_URL;
 const SALESFORCE_WEBHOOK = process.env.SALESFORCE_WEBHOOK_URL;
 const PARDOT_FORM_ACTION =
   process.env.PARDOT_FORM_ACTION || 'https://campaign.ivoclar.com/l/794073/2025-04-07/489ns7';
+// NEW form handler for US_ColdStart Tetric Line Campaign_2026 (Eric/Zach's
+// campaign info email, Jul 29 2026). Sample requests go here — completion
+// actions add the prospect to the NA_ColdStart Tetric Line Leads CRM campaign.
+const PARDOT_SAMPLE_FORM_ACTION =
+  process.env.PARDOT_SAMPLE_FORM_ACTION ||
+  'https://campaign.ivoclar.com/l/794073/2026-07-28/4bk7vl';
 const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 const RECAPTCHA_MIN_SCORE = parseFloat(process.env.RECAPTCHA_MIN_SCORE || '0.5');
 const RECAPTCHA_EXPECTED_ACTION = process.env.RECAPTCHA_EXPECTED_ACTION || 'lead_capture';
@@ -78,7 +84,12 @@ function buildFormEncodedBody(formData) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { recaptchaToken, ...formData } = body || {};
+    const { recaptchaToken, form_type: formType, ...formData } = body || {};
+
+    // Sample requests post to the new 2026 sample campaign; everything else
+    // (legacy demo/contact) keeps the original form handler.
+    const pardotAction =
+      formType === 'sample_request' ? PARDOT_SAMPLE_FORM_ACTION : PARDOT_FORM_ACTION;
 
     const remoteIp =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
@@ -95,10 +106,10 @@ export async function POST(request) {
     }
 
     // Forward to Pardot (which syncs to Salesforce) as form-urlencoded.
-    if (PARDOT_FORM_ACTION) {
+    if (pardotAction) {
       try {
         const pardotBody = buildFormEncodedBody(formData);
-        const pardotRes = await fetch(PARDOT_FORM_ACTION, {
+        const pardotRes = await fetch(pardotAction, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: pardotBody.toString(),
