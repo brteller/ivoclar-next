@@ -8,22 +8,29 @@
  * Step 1 = product (four compact selectors) + contact info (email AND phone).
  * Step 2 = practice + shipping info for the sample.
  *
- * Rep verbiage per Karen: "A local Ivoclar representative will reach out to
- * coordinate your sample delivery." The in-office demo form is removed
- * (Eric) — this section carries id="contact" so all "Try it Today" buttons
- * scroll here.
- *
- * Submits via POST /api/contact with form_type: 'sample_request', which the
- * API route forwards to the NEW Pardot form handler for
- * US_ColdStart Tetric Line Campaign_2026 (per Eric/Zach's campaign info
- * email, Jul 29). Fields posted match the agreed mapping: firstname,
+ * SUBMISSION: the step-2 form POSTs natively (no fetch/API route) straight to
+ * the Pardot form handler for US_ColdStart Tetric Line Campaign_2026:
+ *   https://campaign.ivoclar.com/l/794073/2026-07-28/4bk7vl
+ * (Eric/Zach's campaign info email, Jul 29 2026.) This works on static
+ * deployments too. Fields posted match the agreed mapping: firstname,
  * lastname, email, phone, company (practice name), address, city, state,
- * zip, country, product, privacy, source (hidden). Protected by
- * reCAPTCHA v3, same as the previous lead form.
+ * zip, country, product, privacy, source (hidden).
+ *
+ * SUCCESS FLOW: the handler's Success Location is "Referring URL", so before
+ * submitting we tag the page URL with ?sample=received (history.replaceState)
+ * and send the full referrer (referrerPolicy="no-referrer-when-downgrade").
+ * Pardot redirects the visitor back here, we detect the param on mount, show
+ * the confirmation state, and clean the URL.
  */
 
-import { useState, useEffect } from 'react';
-import Script from 'next/script';
+import { useState, useEffect, useRef } from 'react';
+
+const PARDOT_SAMPLE_FORM_ACTION =
+	process.env.NEXT_PUBLIC_PARDOT_SAMPLE_FORM_ACTION ||
+	'https://campaign.ivoclar.com/l/794073/2026-07-28/4bk7vl';
+
+const SUCCESS_PARAM = 'sample';
+const SUCCESS_VALUE = 'received';
 
 const SAMPLE_PRODUCTS = [
 	{
@@ -66,8 +73,15 @@ const STATE_PROVINCE_OPTIONS = [
 
 const COUNTRY_OPTIONS = ['United States', 'Canada'];
 
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-const RECAPTCHA_ACTION = 'lead_capture';
+// iv_Function_c values — same codes as the original demo form.
+const JOB_TITLE_OPTIONS = [
+	{ value: '01', label: 'Dentist' },
+	{ value: '07', label: 'Denturist' },
+	{ value: '03', label: 'Hygienist' },
+	{ value: '11', label: 'Office Manager' },
+	{ value: '14', label: 'Student' },
+	{ value: '02', label: 'Technician' },
+];
 
 const inputClass =
 	'w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0a478b]/20 focus:border-[#0a478b] bg-white text-sm';
@@ -80,6 +94,7 @@ export default function FreeSampleSection({ categoryName = null }) {
 		lastname: '',
 		email: '',
 		phone: '',
+		jobtitle: '',
 		company: '',
 		address: '',
 		city: '',
@@ -87,16 +102,40 @@ export default function FreeSampleSection({ categoryName = null }) {
 		zip: '',
 		country: '',
 		privacy: false,
+		doubleoptin: false,
 		// Hidden attribution field for the new Salesforce sample campaign
 		// (agreed name: "source"). Populated per domain at runtime.
 		source: '',
 	});
 	const [submitted, setSubmitted] = useState(false);
 	const [submitting, setSubmitting] = useState(false);
-	const [errorMessage, setErrorMessage] = useState(null);
+	const [errorNotice, setErrorNotice] = useState(null);
+	const sectionRef = useRef(null);
 
 	useEffect(() => {
 		setForm((prev) => ({ ...prev, source: window.location.hostname }));
+
+		// Returning from Pardot: both Success and Error Location are "Referring
+		// URL", which we tagged with ?sample=received before submitting. On
+		// error, Pardot appends the submitted fields plus errors=true to the
+		// query — strip it all from the URL either way.
+		const params = new URLSearchParams(window.location.search);
+		const returnedSuccess = params.get(SUCCESS_PARAM) === SUCCESS_VALUE;
+		const returnedError = params.get('errors') === 'true';
+		if (returnedSuccess || returnedError) {
+			window.history.replaceState(null, '', window.location.pathname);
+			if (returnedError) {
+				setErrorNotice(
+					'Something went wrong submitting your request — please check your details and try again.',
+				);
+			} else {
+				setSubmitted(true);
+			}
+			// Bring the confirmation (or the form to retry) into view.
+			setTimeout(() => {
+				sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}, 100);
+		}
 	}, []);
 
 	const handleChange = (e) => {
@@ -109,74 +148,22 @@ export default function FreeSampleSection({ categoryName = null }) {
 		setStep(2);
 	};
 
-	const getRecaptchaToken = () =>
-		new Promise((resolve, reject) => {
-			if (!RECAPTCHA_SITE_KEY) {
-				reject(new Error('reCAPTCHA site key is not configured'));
-				return;
-			}
-			if (typeof window === 'undefined' || !window.grecaptcha || !window.grecaptcha.ready) {
-				reject(new Error('reCAPTCHA failed to load. Please refresh and try again.'));
-				return;
-			}
-			window.grecaptcha.ready(async () => {
-				try {
-					const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-						action: RECAPTCHA_ACTION,
-					});
-					resolve(token);
-				} catch (err) {
-					reject(err);
-				}
-			});
-		});
-
 	const selectedProduct = SAMPLE_PRODUCTS.find((p) => p.id === form.product);
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		if (submitting) return;
-		setErrorMessage(null);
+	// Native submit straight to the Pardot form handler — do NOT preventDefault.
+	// Tag the current URL first so Pardot's "Referring URL" success redirect
+	// brings the visitor back with ?sample=received.
+	const handleNativeSubmit = () => {
 		setSubmitting(true);
-		try {
-			const recaptchaToken = await getRecaptchaToken();
-			const res = await fetch('/api/contact', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					...form,
-					// Send the readable product name to Pardot (maps to Form Value 1).
-					product: selectedProduct?.name || form.product,
-					form_type: 'sample_request',
-					recaptchaToken,
-				}),
-			});
-			const data = await res.json().catch(() => ({}));
-			if (!res.ok || !data.ok) {
-				if (data?.error === 'captcha-failed') {
-					throw new Error("We couldn't verify that you're not a bot. Please refresh and try again.");
-				}
-				throw new Error('There was a problem submitting your request. Please try again.');
-			}
-			setSubmitted(true);
-		} catch (err) {
-			console.error('Sample request submission error:', err);
-			setErrorMessage(err.message || 'There was a problem submitting your request.');
-		} finally {
-			setSubmitting(false);
-		}
+		const url = new URL(window.location.href);
+		url.searchParams.set(SUCCESS_PARAM, SUCCESS_VALUE);
+		window.history.replaceState(null, '', url.toString());
 	};
 
 	return (
 		/* id="contact": with the demo form removed, every "Try it Today" CTA on
 		   the page scrolls to this section — single CTA per Eric's direction. */
-		<section id="contact" className="py-20 px-4 md:px-6 bg-gray-50 border-t border-gray-200">
-			{RECAPTCHA_SITE_KEY && (
-				<Script
-					src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`}
-					strategy="afterInteractive"
-				/>
-			)}
+		<section id="contact" ref={sectionRef} className="py-20 px-4 md:px-6 bg-gray-50 border-t border-gray-200">
 			<div className="max-w-6xl mx-auto">
 				<div
 					className="bg-white p-8 md:p-12 overflow-hidden"
@@ -241,6 +228,10 @@ export default function FreeSampleSection({ categoryName = null }) {
 										<span className="text-xs font-semibold text-gray-400">Step {step} of 2</span>
 									</div>
 
+									{errorNotice && (
+										<p className="text-sm text-red-600 mb-4" role="alert">{errorNotice}</p>
+									)}
+
 									{step === 1 ? (
 										<form onSubmit={handleStepOne} className="space-y-4">
 											{/* Four small product selectors */}
@@ -285,6 +276,12 @@ export default function FreeSampleSection({ categoryName = null }) {
 											</div>
 											<input type="email" name="email" placeholder="Email *" required value={form.email} onChange={handleChange} className={inputClass} />
 											<input type="tel" name="phone" placeholder="Phone *" required value={form.phone} onChange={handleChange} className={inputClass} />
+											<select name="jobtitle" required value={form.jobtitle} onChange={handleChange} className={inputClass}>
+												<option value="">Your role *</option>
+												{JOB_TITLE_OPTIONS.map((opt) => (
+													<option key={opt.value} value={opt.value}>{opt.label}</option>
+												))}
+											</select>
 
 											<button
 												type="submit"
@@ -298,7 +295,30 @@ export default function FreeSampleSection({ categoryName = null }) {
 											</p>
 										</form>
 									) : (
-										<form onSubmit={handleSubmit} className="space-y-4">
+										<form
+											method="POST"
+											action={PARDOT_SAMPLE_FORM_ACTION}
+											referrerPolicy="no-referrer-when-downgrade"
+											onSubmit={handleNativeSubmit}
+											className="space-y-4"
+										>
+											{/* Step-1 values carried as hidden fields for the native post */}
+											<input type="hidden" name="firstname" value={form.firstname} />
+											<input type="hidden" name="lastname" value={form.lastname} />
+											<input type="hidden" name="email" value={form.email} />
+											<input type="hidden" name="phone" value={form.phone} />
+											<input type="hidden" name="jobtitle" value={form.jobtitle} />
+											{/* Readable product name → Pardot Form Value 1 */}
+											<input type="hidden" name="product" value={selectedProduct?.name || form.product} />
+											{/* Hidden attribution for the new Salesforce campaign. Sent under
+											    BOTH names: "source" (agreed with Zach) and "hidden field"
+											    (external name in Eric's mapping → Pardot Form Value 2).
+											    Whichever is mapped picks it up; the other is ignored. */}
+											<input type="hidden" name="source" value={form.source} />
+											<input type="hidden" name="hidden field" value={form.source} />
+											{/* Opt In Double is in the Pardot mapping — always post a value */}
+											<input type="hidden" name="doubleoptin" value={form.doubleoptin ? 'true' : 'false'} />
+
 											{/* Selected product recap */}
 											{selectedProduct && (
 												<div className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-3 py-2.5">
@@ -332,11 +352,8 @@ export default function FreeSampleSection({ categoryName = null }) {
 												</select>
 											</div>
 
-											{/* Hidden attribution field for the new Salesforce campaign */}
-											<input type="hidden" name="source" value={form.source} />
-
 											<label className="flex items-start gap-3 cursor-pointer">
-												<input type="checkbox" name="privacy" checked={form.privacy} onChange={handleChange} required className="mt-1 rounded border-gray-300 text-[#0a478b] focus:ring-[#0a478b]" />
+												<input type="checkbox" name="privacy" value="true" checked={form.privacy} onChange={handleChange} required className="mt-1 rounded border-gray-300 text-[#0a478b] focus:ring-[#0a478b]" />
 												<span className="text-xs text-gray-600">
 													I&apos;ve read and understood the{' '}
 													<a href="https://www.ivoclar.com/en_us/legal/general-terms-of-use" target="_blank" rel="noopener noreferrer" className="text-[#0a478b] hover:underline">
@@ -344,12 +361,16 @@ export default function FreeSampleSection({ categoryName = null }) {
 													</a>.
 												</span>
 											</label>
-
-											{errorMessage && (
-												<p className="text-sm text-red-600" role="alert">
-													{errorMessage}
-												</p>
-											)}
+											<label className="flex items-start gap-3 cursor-pointer">
+												{/* No name attr — posts via the hidden doubleoptin input above */}
+												<input type="checkbox" checked={form.doubleoptin} onChange={(e) => setForm((prev) => ({ ...prev, doubleoptin: e.target.checked }))} className="mt-1 rounded border-gray-300 text-[#0a478b] focus:ring-[#0a478b]" />
+												<span className="text-xs text-gray-600">
+													I would like to receive newsletters from Ivoclar and agree to the{' '}
+													<a href="https://www.ivoclar.com/en_us/legal/marketing-consent" target="_blank" rel="noopener noreferrer" className="text-[#0a478b] hover:underline">
+														Marketing Terms of use
+													</a>.
+												</span>
+											</label>
 
 											<div className="flex items-center gap-3">
 												<button
@@ -369,13 +390,6 @@ export default function FreeSampleSection({ categoryName = null }) {
 											</div>
 											<p className="text-xs text-gray-500 text-center">
 												A local Ivoclar representative will reach out to coordinate delivery.
-											</p>
-											<p className="text-xs text-gray-400 text-center">
-												This site is protected by reCAPTCHA and the Google{' '}
-												<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-500">Privacy Policy</a>{' '}
-												and{' '}
-												<a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-500">Terms of Service</a>{' '}
-												apply.
 											</p>
 										</form>
 									)}
